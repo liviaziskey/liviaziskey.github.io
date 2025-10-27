@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Nebraskan News Quiz</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Use a font similar to a newspaper, like Inter */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Custom styles for answer buttons */
+        .option-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+        .option-btn.correct {
+            background-color: #d1fae5; /* Tailwind green-100 */
+            border-color: #10b981; /* Tailwind green-500 */
+            color: #065f46; /* Tailwind green-800 */
+            font-weight: 600;
+        }
+        .option-btn.incorrect {
+            background-color: #fee2e2; /* Tailwind red-100 */
+            border-color: #ef4444; /* Tailwind red-500 */
+            color: #991b1b; /* Tailwind red-800 */
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen p-4">
+
+    <!-- Main Quiz Card -->
+    <div class="bg-white rounded-xl shadow-2xl p-6 sm:p-8 max-w-lg w-full">
+
+        <!-- Header -->
+        <h1 class="text-3xl font-bold text-center mb-2 text-red-700">
+            Daily Nebraskan
+        </h1>
+        <h2 class="text-2xl font-semibold text-center mb-6 text-gray-800">
+            The News Quiz
+        </h2>
+
+        <!-- Start Screen -->
+        <div id="start-screen">
+            <p class="text-lg text-gray-700 mb-6 text-center">
+                Think you've been keeping up with the news?
+                <br><br>
+                We'll give you <strong>5 random questions</strong> based on recent Daily Nebraskan reporting. See if you can get a perfect score!
+            </p>
+            <button id="start-btn" class="w-full bg-red-700 text-white font-bold py-3 px-6 rounded-lg hover:bg-red-800 transition-all duration-200 text-lg shadow-md">
+                Start Quiz
+            </button>
+        </div>
+
+        <!-- Question Screen (Initially Hidden) -->
+        <div id="question-screen" class="hidden">
+            <div class="mb-6">
+                <p id="question-number" class="text-sm font-semibold text-gray-600 mb-2 text-center">
+                    Question 1 of 5
+                </p>
+                <h3 id="question-text" class="text-xl font-medium text-gray-900 leading-relaxed">
+                    <!-- Question text will be injected here -->
+                </h3>
+            </div>
+            
+            <div id="options-container" class="space-y-3">
+                <!-- Option buttons will be injected here -->
+            </div>
+
+            <div id="feedback-container" class="mt-6 text-center min-h-[70px]">
+                <p id="feedback-text" class="text-lg font-medium"></p>
+                <button id="next-btn" class="hidden bg-red-700 text-white font-bold py-2 px-8 rounded-lg hover:bg-red-800 transition-all duration-200 mt-2 shadow-sm">
+                    Next
+                </button>
+            </div>
+        </div>
+
+        <!-- Score Screen (Initially Hidden) -->
+        <div id="score-screen" class="hidden text-center">
+            <h2 id="score-message" class="text-3xl font-bold text-gray-900 mb-4">
+                <!-- Score message injected here -->
+            </h2>
+            <p id="score-details" class="text-xl text-gray-700 mb-8">
+                You scored 5 out of 5!
+            </p>
+            <button id="play-again-btn" class="w-full bg-red-700 text-white font-bold py-3 px-6 rounded-lg hover:bg-red-800 transition-all duration-200 text-lg shadow-md">
+                Play Again
+            </button>
+        </div>
+
+    </div>
+
+    <script>
+        // --- 1. QUIZ DATA ---
+        // All 20 questions are stored here
+        const allQuestions = [
+            {
+                "id": 1,
+                "questionText": "True or False: The ASUN resolution passed on Wednesday condemns both the name 'Cornhusker Clink' and the proposed ICE detention facility itself.",
+                "type": "trueFalse",
+                "options": [
+                    "True",
+                    "False"
+                ],
+                "correctAnswer": "False"
+            },
+            {
+                "id": 2,
+                "questionText": "What was the final vote count for the ASUN resolution opposing the 'Cornhusker Clink' name?",
+                "type": "multipleChoice",
+                "options": [
+                    "20-8",
+                    "23-5",
+                    "15-13",
+                    "30-0"
+                ],
+                "correctAnswer": "23-5"
+            },
+            {
+                "id": 3,
+                "questionText": "True or False: The University of Nebraska-Lincoln announced it would take legal action against the state for using the 'Cornhusker' name.",
+                "type": "trueFalse",
+                "options": [
+                    "True",
+                    "False"
+                ],
+                "correctAnswer": "False"
+            },
+            {
+                "id": 4,
+                "questionText": "According to the ASUN resolution, the 'Cornhusker' name symbolizes...",
+                "type": "multipleChoice",
+                "options": [
+                    "Division and harm",
+                    "Unity, pride, and community spirit",
+                    "The state's prison system",
+                    "A new partnership with ICE"
+                ],
+                "correctAnswer": "Unity, pride, and community spirit"
+            },
+            {
+                "id": 5,
+                "questionText": "Which senator voted 'no' on the resolution, citing concerns about 'burning bridges' with state officials?",
+                "type": "multipleChoice",
+                "options": [
+                    "Madie Beasley",
+                    "Leonardo Luna-Duran",
+                    "Terrell McKinney",
+                    "Kurt Schneider"
+                ],
+                "correctAnswer": "Kurt Schneider"
+            },
+            {
+                "id": 6,
+                "questionText": "True or False: The 183-page contract between the Nebraska DOC and the Department of Homeland Security officially includes the name 'Cornhusker Clink.'",
+                "type": "trueFalse",
+                "options": [
+                    "True",
+                    "False"
+                ],
+                "correctAnswer": "False"
+            },
+            {
+                "id": 7,
+                "questionText": "Who first announced the 'Cornhusker Clink' name in a social media post?",
+                "type": "multipleChoice",
+                "options": [
+                    "Gov. Jim Pillen",
+                    "Homeland Security Secretary Kristi Noem",
+                    "UNL Chancellor Rodney D. Bennett",
+                    "Rob Jeffreys"
+                ],
+                "correctAnswer": "Homeland Security Secretary Kristi Noem"
+            },
+            {
+                "id": 8,
+                "questionText": "How much money does Gov. Pillen’s office estimate the state will *net annually* from the facility?",
+                "type": "multipleChoice",
+                "options": [
+                    "$2.5 million",
+                    "$5.9 million",
+                    "$14.25 million",
+                    "$45 billion"
+                ],
+                "correctAnswer": "$14.25 million"
+            },
+            {
+                "id": 9,
+                "questionText": "True or False: ICE agreed to pay the state a one-time lump sum of $5.9 million for 'facility renovations.'",
+                "type": "trueFalse",
+                "options": [
+                    "True",
+                    "False"
+                ],
+                "correctAnswer": "True"
+            },
+            {
+                "id": 10,
+                "questionText": "The proposed facility is expected to house up to 300 detainees, which is what percentage of the McCook Work Ethic Camp's current operational capacity?",
+                "type": "multipleChoice",
+                "options": [
+                    "100%",
+                    "125%",
+                    "150%",
+                    "200%"
+                ],
+                "correctAnswer": "150%"
+            },
+            {
+                "id": 11,
+                "questionText": "True or False: The McCook Work Ethic Camp is currently a 200-bed, all-female facility.",
+                "type": "trueFalse",
+                "options": [
+                    "True",
+                    "False"
+                ],
+                "correctAnswer": "False"
+            },
+            {
+                "id": 12,
+                "questionText": "What are the names of the similar ICE detention facilities opened in Florida and Indiana?",
+                "type": "multipleChoice",
+                "options": [
+                    "'Sunshine Slammer' and 'Hoosier Hub'",
+                    "'Alligator Alcatraz' and 'Speedway Slammer'",
+                    "'Everglade Enclosure' and 'Indy Internment'",
+                    "'Seminole Station' and 'Boilermaker Block'"
+                ],
+                "correctAnswer": "'Alligator Alcatraz' and 'Speedway Slammer'"
+            },
+            {
+                "id": 13,
+                "questionText": "Which state senator scheduled an interim hearing to discuss potential building code issues and other concerns?",
+                "type": "multipleChoice",
+                "options": [
+                    "Terrell McKinney",
+                    "Madie Beasley",
+                    "Kurt Schneider",
+                    "Leonardo Luna-Duran"
+                ],
+                "correctAnswer": "Terrell McKinney"
+            },
+            {
+                "id": 14,
+                "questionText": "True or False: Gov. Jim Pillen attended the Sept. 12 interim hearing to answer questions about the facility.",
+                "type": "trueFalse",
+                "options": [
+                    "True",
+                    "False"
+                ],
+                "correctAnswer": "False"
+            },
+            {
+                "id": 15,
+                "questionText": "Why did Gov. Pillen's office state he would not attend the hearing?",
+                "type": "multipleChoice",
+                "options": [
+                    "He had a scheduling conflict.",
+                    "He was meeting with Homeland Security.",
+                    "He believed the committee did not have 'proper jurisdiction.'",
+                    "He was preparing for the lawsuit."
+                ],
+                "correctAnswer": "He believed the committee did not have 'proper jurisdiction.'"
+            },
+            {
+                "id": 16,
+                "questionText": "True or False: Sen. Terrell McKinney argued the governor's decision was unconstitutional because the Legislature, not the governor, controls the state's prisons.",
+                "type": "trueFalse",
+                "options": [
+                    "True",
+                    "False"
+                ],
+                "correctAnswer": "True"
+            },
+            {
+                "id": 17,
+                "questionText": "Who filed a lawsuit to stop the facility, alleging the governor overstepped his authority?",
+                "type": "multipleChoice",
+                "options": [
+                    "The University of Nebraska-Lincoln",
+                    "ASUN",
+                    "13 McCook residents",
+                    "State Senator Terrell McKinney"
+                ],
+                "correctAnswer": "13 McCook residents"
+            },
+            {
+                "id": 18,
+                "questionText": "True or False: At the Sept. 12 interim hearing, the four dozen Nebraskans who testified were unanimously in *opposition* to the facility.",
+                "type": "trueFalse",
+                "options": [
+                    "True",
+                    "False"
+                ],
+                "correctAnswer": "True"
+            },
+            {
+                "id": 19,
+                "questionText": "Besides the 'Cornhusker Clink' resolution, ASUN also passed bills related to...",
+                "type": "multipleChoice",
+                "options": [
+                    "A campus-wide Narcan awareness campaign",
+                    "Funding for the Mexican American Student Association",
+                    "A new prison reporting class for journalism students",
+                    "A formal partnership with the Board of Regents"
+                ],
+                "correctAnswer": "A campus-wide Narcan awareness campaign"
+            },
+            {
+                "id": 20,
+                "questionText": "True or False: According to Sen. Luna-Duran, all four Greek councils at UNL opted in to the Narcan training sessions.",
+                "type": "trueFalse",
+                "options": [
+                    "True",
+                    "False"
+                ],
+                "correctAnswer": "False"
+            }
+        ];
+
+        // --- 2. STATE VARIABLES ---
+        let currentQuestions = [];
+        let currentQuestionIndex = 0;
+        let score = 0;
+        const QUIZ_LENGTH = 5;
+
+        // --- 3. DOM ELEMENTS ---
+        const startScreen = document.getElementById('start-screen');
+        const questionScreen = document.getElementById('question-screen');
+        const scoreScreen = document.getElementById('score-screen');
+
+        const startBtn = document.getElementById('start-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const playAgainBtn = document.getElementById('play-again-btn');
+
+        const questionNumberEl = document.getElementById('question-number');
+        const questionTextEl = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const feedbackTextEl = document.getElementById('feedback-text');
+
+        const scoreMessageEl = document.getElementById('score-message');
+        const scoreDetailsEl = document.getElementById('score-details');
+
+        // --- 4. EVENT LISTENERS ---
+        startBtn.addEventListener('click', startGame);
+        nextBtn.addEventListener('click', handleNext);
+        playAgainBtn.addEventListener('click', startGame);
+
+        // --- 5. FUNCTIONS ---
+
+        /**
+         * Resets state, selects 5 random questions, and shows the first one.
+         */
+        function startGame() {
+            currentQuestionIndex = 0;
+            score = 0;
+            currentQuestions = selectRandomQuestions();
+            
+            startScreen.classList.add('hidden');
+            scoreScreen.classList.add('hidden');
+            questionScreen.classList.remove('hidden');
+            
+            showQuestion();
+        }
+
+        /**
+         * Shuffles the main questions array and slices the first 5.
+         * Uses the Fisher-Yates (aka Knuth) Shuffle algorithm.
+         */
+        function selectRandomQuestions() {
+            let shuffled = [...allQuestions];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled.slice(0, QUIZ_LENGTH);
+        }
+
+        /**
+         * Displays the current question and its options.
+         */
+        function showQuestion() {
+            resetState();
+            const question = currentQuestions[currentQuestionIndex];
+            
+            questionNumberEl.textContent = `Question ${currentQuestionIndex + 1} of ${QUIZ_LENGTH}`;
+            questionTextEl.textContent = question.questionText;
+
+            question.options.forEach(option => {
+                const button = document.createElement('button');
+                button.textContent = option;
+                button.classList.add('option-btn', 'block', 'w-full', 'bg-gray-100', 'hover:bg-gray-200', 'p-4', 'rounded-lg', 'border', 'border-gray-300', 'text-left', 'transition-colors', 'duration-150', 'text-gray-800');
+                
+                button.addEventListener('click', () => selectAnswer(button, option, question.correctAnswer));
+                
+                optionsContainer.appendChild(button);
+            });
+        }
+
+        /**
+         * Resets the UI between questions.
+         */
+        function resetState() {
+            nextBtn.classList.add('hidden');
+            feedbackTextEl.textContent = '';
+            feedbackTextEl.classList.remove('text-green-600', 'text-red-600');
+            while (optionsContainer.firstChild) {
+                optionsContainer.removeChild(optionsContainer.firstChild);
+            }
+        }
+
+        /**
+         * Handles the user's answer selection.
+         */
+        function selectAnswer(selectedButton, selectedOption, correctAnswer) {
+            // Disable all buttons
+            Array.from(optionsContainer.children).forEach(button => {
+                button.disabled = true;
+            });
+
+            // Check if the answer is correct
+            if (selectedOption === correctAnswer) {
+                score++;
+                selectedButton.classList.add('correct');
+                feedbackTextEl.textContent = "Correct!";
+                feedbackTextEl.classList.add('text-green-600');
+            } else {
+                selectedButton.classList.add('incorrect');
+                feedbackTextEl.textContent = "Sorry, that's not right.";
+                feedbackTextEl.classList.add('text-red-600');
+                
+                // Highlight the correct answer
+                Array.from(optionsContainer.children).forEach(button => {
+                    if (button.textContent === correctAnswer) {
+                        button.classList.add('correct');
+                    }
+                });
+            }
+
+            // Show the 'Next' button
+            nextBtn.classList.remove('hidden');
+        }
+
+        /**
+         * Moves to the next question or shows the final score.
+         */
+        function handleNext() {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < QUIZ_LENGTH) {
+                showQuestion();
+            } else {
+                showScore();
+            }
+        }
+
+        /**
+         * Displays the final score and a celebratory message.
+         */
+        function showScore() {
+            questionScreen.classList.add('hidden');
+            scoreScreen.classList.remove('hidden');
+
+            scoreDetailsEl.textContent = `You scored ${score} out of ${QUIZ_LENGTH}!`;
+
+            let message = "";
+            if (score === QUIZ_LENGTH) {
+                message = "Amazing! You're a news expert!";
+            } else if (score >= QUIZ_LENGTH * 0.7) {
+                message = "Great job! You really know your stuff.";
+            } else if (score >= QUIZ_LENGTH * 0.4) {
+                message = "Not bad! Keep reading!";
+            } else {
+                message = "Better luck next time!";
+            }
+            scoreMessageEl.textContent = message;
+        }
+
+    </script>
+</body>
+</html>
