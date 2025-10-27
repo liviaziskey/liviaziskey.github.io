@@ -59,6 +59,11 @@
 
         <!-- Question Screen (Initially Hidden) -->
         <div id="question-screen" class="hidden">
+            <!-- Progress Bar -->
+            <div class="w-full bg-gray-200 rounded-full h-2.5 mb-4">
+                <div id="progress-bar" class="bg-red-700 h-2.5 rounded-full transition-all duration-300 ease-out" style="width: 0%"></div>
+            </div>
+            
             <div class="mb-6">
                 <p id="question-number" class="text-sm font-semibold text-gray-600 mb-2 text-center">
                     Question 1 of 5
@@ -362,6 +367,7 @@
         const questionTextEl = document.getElementById('question-text');
         const optionsContainer = document.getElementById('options-container');
         const feedbackTextEl = document.getElementById('feedback-text');
+        const progressBarEl = document.getElementById('progress-bar'); // <-- Add this line
 
         const scoreMessageEl = document.getElementById('score-message');
         const scoreDetailsEl = document.getElementById('score-details');
@@ -405,6 +411,11 @@
          * Displays the current question and its options.
          */
         function showQuestion() {
+            // Update progress bar
+            // We show progress for the *next* question, so we use currentQuestionIndex
+            const progressPercent = (currentQuestionIndex / QUIZ_LENGTH) * 100;
+            progressBarEl.style.width = `${progressPercent}%`;
+
             resetState();
             const question = currentQuestions[currentQuestionIndex];
             
@@ -480,10 +491,17 @@
          */
         function handleNext() {
             currentQuestionIndex++;
+            
+            // Update progress bar *before* showing the next question or score
+            const progressPercent = (currentQuestionIndex / QUIZ_LENGTH) * 100;
+            progressBarEl.style.width = `${progressPercent}%`;
+
             if (currentQuestionIndex < QUIZ_LENGTH) {
-                showQuestion();
+                // Wait a tiny bit for the progress bar to animate before showing the next question
+                setTimeout(showQuestion, 300);
             } else {
-                showScore();
+                // Wait for progress bar to hit 100% before showing score
+                setTimeout(showScore, 300);
             }
         }
 
@@ -527,5 +545,6 @@
     </script>
 </body>
 </html>
+
 
 
