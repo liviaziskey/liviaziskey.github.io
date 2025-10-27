@@ -6,6 +6,8 @@
     <title>Daily Nebraskan News Quiz</title>
     <!-- Load Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Load Confetti Library -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
         /* Use a font similar to a newspaper, like Inter */
         body {
@@ -476,8 +478,24 @@
                 message = "Better luck next time!";
             }
             scoreMessageEl.textContent = message;
+
+            // --- ADD CONFETTI ---
+            // If the user got a perfect score, launch confetti!
+            if (score === QUIZ_LENGTH) {
+                // Check if confetti function exists (from the imported script)
+                if (typeof confetti === 'function') {
+                    // Launch a burst of confetti
+                    confetti({
+                        particleCount: 150,
+                        spread: 100,
+                        origin: { y: 0.6 } // Start confetti slightly from the top
+                    });
+                }
+            }
+            // --- END CONFETTI ---
         }
 
     </script>
 </body>
 </html>
+
