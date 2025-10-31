@@ -158,7 +158,7 @@
         </header>
 
         <div id="stats-bar">
-            <span class="stat" id="stat-money">Money: $50</span>
+            <span class="stat" id="stat-money">Money: $40</span>
             <span class="stat" id="stat-energy">Energy: 100</span>
             <span class="stat" id="stat-spirit">Spirit: 100</span>
         </div>
@@ -177,7 +177,7 @@
     <script>
         // --- GAME STATE ---
         let gameState = {
-            money: 50,
+            money: 40, // <-- DIFFICULTY CHANGE: Less starting money
             energy: 100,
             spirit: 100,
             progress: 0,
@@ -195,13 +195,13 @@
         const statProgressBar = document.getElementById('stat-progress-bar');
 
         // --- GAME EVENTS ARRAY ---
-        // This is the core of the game's replayability.
+        // Penalties have been increased for difficulty
         const events = [
             {
                 type: 'auto',
                 text: "You trip on a cracked sidewalk on P Street.",
-                result: "You drop your phone, but it's okay. -5 Energy, -5 Spirit.",
-                energy: -5,
+                result: "You drop your phone, but it's okay. -8 Energy, -5 Spirit.",
+                energy: -8, // <-- Increased penalty
                 spirit: -5,
                 money: 0
             },
@@ -216,9 +216,9 @@
             {
                 type: 'auto',
                 text: "A scooter zips by, splashing puddle water on you.",
-                result: "Your jeans are soaked. -15 Spirit.",
+                result: "Your jeans are soaked. -20 Spirit.",
                 energy: 0,
-                spirit: -15,
+                spirit: -20, // <-- Increased penalty
                 money: 0
             },
             {
@@ -232,9 +232,9 @@
             {
                 type: 'auto',
                 text: "You get a text: 'Your Canvas quiz is due at kickoff.'",
-                result: "Instant dread. -20 Spirit.",
+                result: "Instant dread. -25 Spirit.",
                 energy: 0,
-                spirit: -20,
+                spirit: -25, // <-- Increased penalty
                 money: 0
             },
             {
@@ -251,16 +251,16 @@
                 choices: [
                     {
                         text: "Chat politely for a bit.",
-                        result: "You talk about the midterm. It's draining. -10 Energy, -5 Spirit.",
-                        energy: -10,
-                        spirit: -5,
+                        result: "You talk about the midterm. It's draining. -12 Energy, -8 Spirit.",
+                        energy: -12, // <-- Increased penalty
+                        spirit: -8, // <-- Increased penalty
                         money: 0
                     },
                     {
                         text: "Pretend you have a call and walk off.",
-                        result: "You feel a little guilty, but save time. -5 Spirit.",
+                        result: "You feel a little guilty, but save time. -10 Spirit.",
                         energy: 0,
-                        spirit: -5,
+                        spirit: -10, // <-- Increased penalty
                         money: 0
                     }
                 ]
@@ -311,9 +311,9 @@
                 choices: [
                     {
                         text: "Wait in line.",
-                        result: "It takes forever. You're tired and sober. -15 Energy, -10 Spirit.",
-                        energy: -15,
-                        spirit: -10,
+                        result: "It takes forever. You're tired and sober. -20 Energy, -15 Spirit.",
+                        energy: -20, // <-- Increased penalty
+                        spirit: -15, // <-- Increased penalty
                         money: 0
                     },
                     {
@@ -331,16 +331,16 @@
                 choices: [
                     {
                         text: "Go to the ticket office and pay the $25 replacement fee.",
-                        result: "It's a painful loss, but you have your ticket. -$25, -20 Spirit.",
+                        result: "It's a painful loss, but you have your ticket. -$25, -25 Spirit.",
                         energy: -5,
-                        spirit: -20,
+                        spirit: -25, // <-- Increased penalty
                         money: -25
                     },
                     {
                         text: "Try to find a friend who can 'get you in'.",
-                        result: "You waste 20 minutes and they can't help. -15 Energy, -15 Spirit.",
-                        energy: -15,
-                        spirit: -15,
+                        result: "You waste 20 minutes and they can't help. -20 Energy, -20 Spirit.",
+                        energy: -20, // <-- Increased penalty
+                        spirit: -20, // <-- Increased penalty
                         money: 0
                     }
                 ]
@@ -351,23 +351,21 @@
                 choices: [
                     {
                         text: "Be a good friend and go back.",
-                        result: "You trek all the way back to your dorm. -30 Progress, -20 Energy.",
-                        energy: -20,
+                        result: "You trek all the way back to your dorm. -30 Progress, -25 Energy.",
+                        energy: -25, // <-- Increased penalty
                         spirit: 0,
                         money: 0,
-                        progress: -30 // Special progress penalty
+                        progress: -30 
                     },
                     {
                         text: "Text them 'Sorry, R.A. is on duty. GBR.'",
-                        result: "You feel terrible. But the game is calling. -30 Spirit.",
+                        result: "You feel terrible. But the game is calling. -35 Spirit.",
                         energy: 0,
-                        spirit: -30,
+                        spirit: -35, // <-- Increased penalty
                         money: 0
                     }
                 ]
             },
-            
-            // --- NEW EVENTS ADDED HERE ---
             {
                 type: 'auto',
                 text: "You hear 'Sirius' playing from a nearby tailgate.",
@@ -379,16 +377,16 @@
             {
                 type: 'auto',
                 text: "A sudden, cold gust of wind almost steals your hat.",
-                result: "You save it, but the stress is real. -5 Energy, -5 Spirit.",
-                energy: -5,
-                spirit: -5,
+                result: "You save it, but the stress is real. -8 Energy, -8 Spirit.",
+                energy: -8, // <-- Increased penalty
+                spirit: -8, // <-- Increased penalty
                 money: 0
             },
             {
                 type: 'auto',
                 text: "The line to cross 10th & Q street is massive.",
-                result: "You're stuck waiting for the light. -5 Energy.",
-                energy: -5,
+                result: "You're stuck waiting for the light. -8 Energy.",
+                energy: -8, // <-- Increased penalty
                 spirit: 0,
                 money: 0
             },
@@ -425,9 +423,9 @@
                     },
                     {
                         text: "Dodge the camera.",
-                        result: "You're not in the mood for fame. -5 Spirit.",
+                        result: "You're not in the mood for fame. -10 Spirit.",
                         energy: 0,
-                        spirit: -5,
+                        spirit: -10, // <-- Increased penalty
                         money: 0
                     }
                 ]
@@ -445,9 +443,9 @@
                     },
                     {
                         text: "Ignore them.",
-                        result: "You're too cool for free beads. -5 Spirit.",
+                        result: "You're too cool for free beads. -10 Spirit.",
                         energy: 0,
-                        spirit: -5,
+                        spirit: -10, // <-- Increased penalty
                         money: 0
                     }
                 ]
@@ -458,16 +456,16 @@
                 choices: [
                     {
                         text: "Panic and run to the Union for Wi-Fi.",
-                        result: "You sprint there and back. It works, but you're exhausted. -25 Energy, -15 Spirit.",
-                        energy: -25,
-                        spirit: -15,
+                        result: "You sprint there and back. It works, but you're exhausted. -30 Energy, -20 Spirit.",
+                        energy: -30, // <-- Increased penalty
+                        spirit: -20, // <-- Increased penalty
                         money: 0
                     },
                     {
                         text: "Keep refreshing and hold your phone up.",
-                        result: "After 5 stressful minutes, it finally loads! -15 Spirit.",
+                        result: "After 5 stressful minutes, it finally loads! -20 Spirit.",
                         energy: 0,
-                        spirit: -15,
+                        spirit: -20, // <-- Increased penalty
                         money: 0
                     }
                 ]
@@ -478,16 +476,16 @@
                 choices: [
                     {
                         text: "Tell them to catch a bus and you'll wait.",
-                        result: "They're your responsibility. You wait for them. -15 Energy, -20 Spirit.",
-                        energy: -15,
-                        spirit: -20,
+                        result: "They're your responsibility. You wait for them. -20 Energy, -25 Spirit.",
+                        energy: -20, // <-- Increased penalty
+                        spirit: -25, // <-- Increased penalty
                         money: 0
                     },
                     {
                         text: "Tell them 'Good luck. See you inside.'",
-                        result: "It's brutal, but the game is calling. -25 Spirit.",
+                        result: "It's brutal, but the game is calling. -35 Spirit.",
                         energy: 0,
-                        spirit: -25,
+                        spirit: -35, // <-- Increased penalty
                         money: 0
                     }
                 ]
@@ -500,8 +498,6 @@
                 spirit: 10,
                 money: 0
             },
-            // --- END OF NEW EVENTS ---
-
         ];
 
         // --- EVENT LISTENERS ---
@@ -512,7 +508,7 @@
         function startGame() {
             // Reset game state
             gameState = {
-                money: 50,
+                money: 40, // <-- DIFFICULTY CHANGE: Reset to new starting money
                 energy: 100,
                 spirit: 100,
                 progress: 0,
@@ -586,12 +582,12 @@
         function takeStep() {
             if (!gameState.gameActive) return;
 
-            // Each step costs energy and moves you forward
-            const progressGain = Math.floor(Math.random() * 10) + 10; // 10-19 progress
+            // Each step costs more energy and moves you forward less
+            const progressGain = Math.floor(Math.random() * 8) + 9; // 9-16 progress (was 10-19)
             gameState.progress += progressGain;
-            gameState.energy -= 5;
+            gameState.energy -= 7; // <-- DIFFICULTY CHANGE: Increased energy cost
             
-            logMessage(`You weave through the crowds. +${progressGain} Progress, -5 Energy.`, 'event');
+            logMessage(`You weave through the crowds. +${progressGain} Progress, -7 Energy.`, 'event');
             updateStatsUI();
 
             // Check for win condition
