@@ -99,7 +99,7 @@
             /* No text-indent here by default */
         }
 
-        /* --- NEW STYLES FOR INSTRUCTIONS --- */
+        /* --- STYLES FOR INSTRUCTIONS --- */
         #game-log .welcome {
             color: #FFFF00; /* Yellow */
             font-size: 1.1rem;
@@ -224,6 +224,8 @@
                 Click "Start Your Trek" below to begin. Good luck.
             </p>
         </div>
+
+
         <div id="actions-container">
             <button id="start-button">Start Your Trek</button>
         </div>
@@ -553,6 +555,67 @@
                 spirit: 10,
                 money: 0
             },
+            
+            // --- NEW DAILY NEBRASKAN EVENTS ---
+            
+            {
+                type: 'auto',
+                text: "You pass a Daily Nebraskan newspaper box. The headline reads 'HUSKERS POISED FOR VICTORY!'",
+                result: "The positive news gets you pumped! +10 Spirit.",
+                energy: 0,
+                spirit: 10,
+                money: 0
+            },
+            {
+                type: 'auto',
+                text: "You see a DN photographer taking crowd shots. You wave, but they don't see you.",
+                result: "You feel invisible. -5 Spirit.",
+                energy: 0,
+                spirit: -5,
+                money: 0
+            },
+            {
+                type: 'choice',
+                text: "Someone is handing out the DN's special gameday edition.",
+                choices: [
+                    {
+                        text: "Take one to read.",
+                        result: "You walk and read. You learn a new stat, but trip. +5 Spirit, -5 Energy.",
+                        energy: -5,
+                        spirit: 5,
+                        money: 0
+                    },
+                    {
+                        text: "Keep your hands free.",
+                        result: "You jog past, focused on the game.",
+                        energy: 0,
+                        spirit: 0,
+                        money: 0
+                    }
+                ]
+            },
+            {
+                type: 'major_obstacle',
+                text: "A Daily Nebraskan reporter stops you! 'Can I get a quote about your gameday outfit?'",
+                choices: [
+                    {
+                        text: "Strike a pose and give a great quote.",
+                        result: "You feel like a celebrity! You'll be in tomorrow's paper! +20 Spirit.",
+                        energy: 0,
+                        spirit: 20,
+                        money: 0
+                    },
+                    {
+                        text: "Shy away and mumble 'no thanks'.",
+                        result: "You feel awkward and embarrassed. -15 Spirit.",
+                        energy: 0,
+                        spirit: -15,
+                        money: 0
+                    }
+                ]
+            }
+            
+            // --- END OF NEW EVENTS ---
         ];
 
         // --- EVENT LISTENERS ---
