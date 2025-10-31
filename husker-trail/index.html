@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Husker Trail</title>
+    <style>
+        /* --- Retro DOS / Oregon Trail Styling --- */
+        body {
+            font-family: 'Courier New', Courier, monospace;
+            background-color: #000000;
+            color: #00FF00; /* Classic green text */
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        #game-container {
+            width: 90%;
+            max-width: 600px;
+            border: 3px double #00FF00;
+            padding: 20px;
+            box-shadow: 0 0 15px #00FF00;
+        }
+
+        /* --- Screens --- */
+        .screen {
+            display: none; /* All screens hidden by default */
+        }
+
+        #start-screen {
+            display: block; /* Show start screen initially */
+            text-align: center;
+        }
+
+        #end-screen {
+            text-align: center;
+        }
+
+        h1, h2 {
+            text-align: center;
+            letter-spacing: 2px;
+            animation: flicker 1.5s infinite alternate;
+        }
+
+        p, pre {
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        /* Flicker animation for headers */
+        @keyframes flicker {
+          0%, 18%, 22%, 25%, 53%, 57%, 100% {
+            text-shadow:
+              0 0 4px #00FF00,
+              0 0 11px #00FF00,
+              0 0 19px #00FF00,
+              0 0 40px #0f0,
+              0 0 80px #0f0;
+          }
+          20%, 24%, 55% {
+            text-shadow: none;
+          }
+        }
+
+        /* --- Game Elements --- */
+        #stats-bar {
+            border-bottom: 2px solid #00FF00;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+        }
+
+        .stat {
+            margin: 5px 10px;
+        }
+
+        #event-image {
+            font-size: 0.8rem;
+            text-align: center;
+            line-height: 1.2;
+            padding: 10px;
+            border: 1px dashed #00FF00;
+            margin-bottom: 20px;
+        }
+
+        #choices-container {
+            margin-top: 20px;
+        }
+
+        button {
+            font-family: 'Courier New', Courier, monospace;
+            background-color: #00FF00;
+            color: #000000;
+            border: none;
+            padding: 10px 15px;
+            font-size: 1rem;
+            cursor: pointer;
+            display: block;
+            width: 100%;
+            margin-top: 10px;
+            text-align: left;
+        }
+
+        button:hover {
+            background-color: #000000;
+            color: #00FF00;
+            border: 1px solid #00FF00;
+        }
+
+        #major-selection button {
+            text-align: center;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div id="game-container">
+
+        <div id="start-screen" class="screen">
+            <h1>THE HUSKER TRAIL</h1>
+            <p>You are a UNL student. Your goal: survive the week and make it to the Husker game on Saturday.</p>
+            <p>Choose your major to begin:</p>
+            
+            <div id="major-selection">
+                <button onclick="startGame('journalism')">
+                    <strong>Journalism</strong><br>
+                    (Starts with high Energy, but low Money)
+                </button>
+                <button onclick="startGame('engineering')">
+                    <strong>Engineering</strong><br>
+                    (Starts with high Grades, but low Energy)
+                </button>
+                <button onclick="startGame('business')">
+                    <strong>Business</strong><br>
+                    (Starts with high Money, but low Grades)
+                </button>
+            </div>
+            
+            <pre style="margin-top: 20px; text-align: left;">
+   /~\
+  |oo )
+  _\=/_
+ /  _  \
+//|/.\|\\
+\\ \_/  ||
+ \___/  ||
+   || ||
+   || ||
+   || ||
+  .'  '.
+  `----`
+GO BIG RED
+            </pre>
+        </div>
+
+        <div id="game-screen" class="screen">
+            <h2 id="day-display">Current Day: Monday</h2>
+            
+            <div id="stats-bar">
+                <span class="stat" id="money-stat">Money: $0</span>
+                <span class="stat" id="energy-stat">Energy: 0%</span>
+                <span class="stat" id="grades-stat">Grades: 0%</span>
+            </div>
+
+            <pre id="event-image"></pre>
+            <p id="event-text"></p>
+
+            <div id="choices-container">
+                </div>
+        </div>
+
+        <div id="end-screen" class="screen">
+            <h2 id="end-title"></h2>
+            <p id="end-message"></p>
+            <pre id="end-image" style="text-align: center;"></pre>
+            <button onclick="restartGame()">Play Again?</button>
+        </div>
+
+    </div>
+
+    <script>
+        // --- C: Define Game State ---
+        let gameState = {
+            player: {
+                money: 50,
+                energy: 70,
+                grades: 70,
+            },
+            currentDayIndex: 0,
+            days: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday (GAMEDAY!)"]
+        };
+
+        // --- C: Define Starting Conditions ---
+        const majors = {
+            journalism: { money: 30, energy: 90, grades: 75 },
+            engineering: { money: 50, energy: 60, grades: 90 },
+            business: { money: 80, energy: 70, grades: 65 }
+        };
+
+        // --- C: Define All Game Events ---
+        const events = [
+            {
+                description: "You wake up for your 8 AM in Oldfather Hall. The line for the Union Starbucks is massive.",
+                image: `
+      ( (
+     ) )
+   .........
+   |       |]
+   |-------|
+   |_______|
+                `,
+                choices: [
+                    { text: "Wait in line for coffee.", effect: { money: -6, energy: +10, grades: -5 } },
+                    { text: "Skip it and go to class tired.", effect: { money: 0, energy: -15, grades: +5 } }
+                ]
+            },
+            {
+                description: "It's Tuesday. You have a huge project due. Your friends want to go to Raising Cane's on P Street.",
+                image: `
+   / \\     / \\     / \\
+  /___\\   /___\\   /___\\
+  | C |   | A |   | N |
+  | H |   | N |   | E |
+  | I |   | E |   | S |
+  |___|   |___|   |___|
+                `,
+                choices: [
+                    { text: "Go with them. (Chicken!)", effect: { money: -12, energy: +15, grades: -10 } },
+                    { text: "Stay and study at Love Library.", effect: { money: 0, energy: -10, grades: +15 } }
+                ]
+            },
+            {
+                description: "A wild Veo scooter is blocking the sidewalk on your way to Bessey Hall.",
+                image: `
+   ,--.
+ __|oo|__
+ \\    ||
+  \\/--\\/
+  (    )
+                `,
+                choices: [
+                    { text: "Move it (good deed).", effect: { money: 0, energy: -5, grades: +5 } },
+                    { text: "Walk around it. (Not my problem).", effect: { money: 0, energy: 0, grades: 0 } }
+                ]
+            },
+            {
+                description: "POP QUIZ in your Psych 101 class! You didn't do the reading.",
+                image: `
+   _________________
+  |  POP QUIZ!    |
+  | 1. ...?       |
+  | A) ...        |
+  | B) ...        |
+  |_______________|
+                `,
+                choices: [
+                    { text: "Wildly guess.", effect: { money: 0, energy: -5, grades: -20 } },
+                    { text: "Try to 'reason' it out.", effect: { money: 0, energy: -10, grades: +5 } }
+                ]
+            },
+            {
+                description: "You find $20 on the ground outside the Wick Alumni Center!",
+                image: `
+   .----------.
+   | [20]     |
+   |   ($)    |
+   '----------'
+                `,
+                choices: [
+                    { text: "Pocket it!", effect: { money: +20, energy: +5, grades: 0 } },
+                    { text: "Turn it in to the front desk.", effect: { money: 0, energy: +10, grades: -5 } }
+                ]
+            },
+            {
+                description: "Your roommate is playing loud music while you're trying to study.",
+                image: `
+  \\  /
+   \\/
+  /\\ \\
+ /  \\ \\
+ \\   / /
+  \\ / /
+   \\/
+                `,
+                choices: [
+                    { text: "Ask them to use headphones.", effect: { money: 0, energy: -10, grades: +5 } },
+                    { text: "Go to the library basement.", effect: { money: 0, energy: -5, grades: +10 } }
+                ]
+            },
+            {
+                description: "It's Thursday. Your friends are all going to O Street.",
+                image: `
+ |   |   |   |   |
+ |---|---|---|---|
+ | D | J | ' | S |
+ |---|---|---|---|
+                `,
+                choices: [
+                    { text: "Go out! (YOLO)", effect: { money: -30, energy: +20, grades: -20 } },
+                    { text: "Stay in and study.", effect: { money: 0, energy: -15, grades: +15 } }
+                ]
+            },
+            {
+                description: "It's Friday! You need red gear for the game. The Husker Fan Shop is packed.",
+                image: `
+    _   _
+   ( \\ / )
+  ( ( N ) )
+   ( / \\ )
+    '-.-'
+                `,
+                choices: [
+                    { text: "Brave the crowd and buy a new shirt.", effect: { money: -25, energy: -10, grades: 0 } },
+                    { text: "Wear your old, slightly-stained shirt.", effect: { money: 0, energy: 0, grades: 0 } }
+                ]
+            },
+            {
+                description: "You forgot your N-Card and can't get into the Rec Center.",
+                image: `
+ .---------------.
+ | [N] UNL       |
+ |  o            |
+ | /|\\  Livia Z. |
+ | / \\           |
+ '---------------'
+                `,
+                choices: [
+                    { text: "Go all the way back to your dorm.", effect: { money: 0, energy: -15, grades: 0 } },
+                    { text: "Skip the workout.", effect: { money: 0, energy: +10, grades: -5 } }
+                ]
+            }
+        ];
+
+        // --- C: Get HTML Elements ---
+        const startScreen = document.getElementById('start-screen');
+        const gameScreen = document.getElementById('game-screen');
+        const endScreen = document.getElementById('end-screen');
+
+        const moneyStat = document.getElementById('money-stat');
+        const energyStat = document.getElementById('energy-stat');
+        const gradesStat = document.getElementById('grades-stat');
+
+        const dayDisplay = document.getElementById('day-display');
+        const eventImage = document.getElementById('event-image');
+        const eventText = document.getElementById('event-text');
+        const choicesContainer = document.getElementById('choices-container');
+
+        const endTitle = document.getElementById('end-title');
+        const endMessage = document.getElementById('end-message');
+        const endImage = document.getElementById('end-image');
+
+
+        // --- C: Game Logic Functions ---
+
+        /**
+         * Starts the game, sets up the player based on major.
+         */
+        function startGame(major) {
+            // 1. Set player stats from chosen major
+            gameState.player = { ...majors[major] };
+            gameState.currentDayIndex = 0;
+
+            // 2. Update UI
+            startScreen.style.display = 'none';
+            endScreen.style.display = 'none';
+            gameScreen.style.display = 'block';
+
+            // 3. Start the first day
+            runDay();
+        }
+
+        /**
+         * Resets the game state and returns to the start screen.
+         */
+        function restartGame() {
+            endScreen.style.display = 'none';
+            startScreen.style.display = 'block';
+            // State will be reset when startGame() is called
+        }
+
+        /**
+        * Updates the stat display (Money, Energy, Grades).
+        */
+        function updateStats() {
+            moneyStat.textContent = `Money: $${gameState.player.money}`;
+            energyStat.textContent = `Energy: ${gameState.player.energy}%`;
+            gradesStat.textContent = `Grades: ${gameState.player.grades}%`;
+        }
+
+        /**
+         * Core game loop: checks for win/loss, then triggers a new event.
+         */
+        function runDay() {
+            // 1. Check for Gameday (Win condition)
+            if (gameState.currentDayIndex >= gameState.days.length - 1) {
+                winGame();
+                return;
+            }
+
+            // 2. Update Day Display
+            dayDisplay.textContent = `Current Day: ${gameState.days[gameState.currentDayIndex]}`;
+            
+            // 3. Update Stats Display
+            updateStats();
+
+            // 4. Trigger a random event
+            triggerEvent();
+        }
+
+        /**
+         * Selects a random event and displays it.
+         */
+        function triggerEvent() {
+            // 1. Get a random event
+            const event = events[Math.floor(Math.random() * events.length)];
+
+            // 2. Display event text and image
+            eventText.textContent = event.description;
+            eventImage.textContent = event.image;
+
+            // 3. Clear old choices
+            choicesContainer.innerHTML = '';
+
+            // 4. Create and display new choices
+            event.choices.forEach((choice, index) => {
+                const button = document.createElement('button');
+                button.textContent = `${index + 1}. ${choice.text}`;
+                button.onclick = () => handleChoice(choice.effect);
+                choicesContainer.appendChild(button);
+            });
+        }
+
+        /**
+         * Processes the player's choice, updates stats, and checks for loss.
+         */
+        function handleChoice(effect) {
+            // 1. Apply effects to player stats
+            gameState.player.money += (effect.money || 0);
+            gameState.player.energy += (effect.energy || 0);
+            gameState.player.grades += (effect.grades || 0);
+
+            // 2. Clamp stats (no negative money, energy/grades 0-100)
+            if (gameState.player.energy > 100) gameState.player.energy = 100;
+            if (gameState.player.grades > 100) gameState.player.grades = 100;
+
+            // 3. Check for loss conditions
+            if (checkLoss()) {
+                return; // endGame() is called inside checkLoss()
+            }
+
+            // 4. Advance to the next day
+            gameState.currentDayIndex++;
+            runDay();
+        }
+
+        /**
+         * Checks if any stat has hit a losing threshold.
+         */
+        function checkLoss() {
+            const art = `
+   __   __
+  /  \\ /  \\
+ |   X   X   |
+ |     |     |
+ |    ---    |
+  \\         /
+   \\_______/
+            `;
+            if (gameState.player.money < 0) {
+                endGame("GAME OVER", "You ran out of money and had to ask your parents for help. You're too embarrassed to go to the game.", art);
+                return true;
+            }
+            if (gameState.player.energy <= 0) {
+                endGame("GAME OVER", "You're completely burned out. You slept through your alarm and missed the entire game.", art);
+                return true;
+            }
+            if (gameState.player.grades < 60) {
+                endGame("GAME OVER", "Your grades tanked! You're on academic probation and have to spend Saturday in the library.", art);
+                return true;
+            }
+            return false;
+        }
+
+        /**
+         * Displays the end screen (win or loss).
+         */
+        function endGame(title, message, art) {
+            gameScreen.style.display = 'none';
+            endScreen.style.display = 'block';
+
+            endTitle.textContent = title;
+            endMessage.textContent = message;
+            endImage.textContent = art;
+        }
+
+        /**
+         * Displays the win screen.
+         */
+        function winGame() {
+            const art = `
+  =====================
+ |   MEMORIAL STADIUM  |
+ |=====================|
+ |  |||    N    |||   |
+ |  |||   / \\   |||   |
+ |  |||  / _ \\  |||   |
+ |__|||_/_/ \\_\\_|||___|
+            `;
+            endGame("YOU MADE IT!", "You survived the week! You walk into Memorial Stadium just in time for the Tunnel Walk. GO BIG RED!", art);
+        }
+
+    </script>
+</body>
+</html>
