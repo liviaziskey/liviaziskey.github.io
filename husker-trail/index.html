@@ -39,12 +39,21 @@
             background-color: #111;
         }
 
+        /* Daily Nebraskan text styling */
+        #daily-nebraskan-header {
+            font-size: 0.9rem; /* Smaller than game title */
+            color: #FFFFFF; /* White text for contrast */
+            margin-bottom: 10px; /* Space between this and the main title */
+            text-shadow: 1px 1px #000000; /* Slight shadow for readability */
+        }
+
         h1 {
             font-size: 1.5rem;
             color: #FF0000; /* Husker Red */
             text-shadow: 2px 2px #FFFF00; /* Gold shadow */
             margin: 0;
         }
+
 
         /* Stats bar */
         #stats-bar {
@@ -154,6 +163,7 @@
 
     <div id="game-container">
         <header>
+            <p id="daily-nebraskan-header">The Daily Nebraskan Presents:</p>
             <h1>The Husker Trail</h1>
         </header>
 
@@ -182,7 +192,7 @@
             spirit: 100,
             progress: 0,
             gameActive: false,
-            lastEventIndex: -1 // <-- NEW: Tracks the last event to prevent repeats
+            lastEventIndex: -1 
         };
 
         // --- DOM ELEMENTS ---
@@ -196,7 +206,6 @@
         const statProgressBar = document.getElementById('stat-progress-bar');
 
         // --- GAME EVENTS ARRAY ---
-        // (Using the "Hard Mode" tuning from our last conversation)
         const events = [
             {
                 type: 'auto',
@@ -514,7 +523,7 @@
                 spirit: 100,
                 progress: 0,
                 gameActive: true,
-                lastEventIndex: -1 // <-- NEW: Reset the event tracker
+                lastEventIndex: -1 
             };
             
             // Clear log and actions
@@ -587,7 +596,7 @@
             // Each step costs more energy and moves you forward less
             const progressGain = Math.floor(Math.random() * 8) + 9; // 9-16 progress
             gameState.progress += progressGain;
-            gameState.energy -= 7; // Increased energy cost
+            gameState.energy -= 7; 
             
             logMessage(`You weave through the crowds. +${progressGain} Progress, -7 Energy.`, 'event');
             updateStatsUI();
@@ -600,16 +609,15 @@
         }
 
         function triggerRandomEvent() {
-            // --- NEW LOGIC TO PREVENT REPEATS ---
+            // --- LOGIC TO PREVENT REPEATS ---
             let newIndex;
-            // Keep picking a new event until it's different from the last one
             do {
                 newIndex = Math.floor(Math.random() * events.length);
-            } while (newIndex === gameState.lastEventIndex && events.length > 1); // Check events.length > 1 to prevent infinite loop
+            } while (newIndex === gameState.lastEventIndex && events.length > 1); 
 
-            gameState.lastEventIndex = newIndex; // Store this event as the "last" one
+            gameState.lastEventIndex = newIndex; 
             const event = events[newIndex];
-            // --- END OF NEW LOGIC ---
+            // --- END OF LOGIC ---
             
             logMessage(event.text, 'choice');
             actionsContainer.innerHTML = ''; // Clear "Continue" button
