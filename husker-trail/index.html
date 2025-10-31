@@ -96,7 +96,6 @@
 
         #game-log p {
             margin: 0 0 10px 0;
-            /* No text-indent here by default */
         }
 
         /* --- STYLES FOR INSTRUCTIONS --- */
@@ -253,54 +252,128 @@
         const statProgressBar = document.getElementById('stat-progress-bar');
 
         // --- GAME EVENTS ARRAY ---
+        // ALL events are now 'choice' or 'major_obstacle'
         const events = [
             {
-                type: 'auto',
-                text: "You trip on a cracked sidewalk on P Street.",
-                result: "You drop your phone, but it's okay. -8 Energy, -5 Spirit.",
-                energy: -8,
-                spirit: -5,
-                money: 0
+                type: 'choice',
+                text: "You trip on a cracked sidewalk on P Street!",
+                choices: [
+                    {
+                        text: "Shake it off.",
+                        result: "You're tough, but it rattled you. -8 Energy, -5 Spirit.",
+                        energy: -8,
+                        spirit: -5,
+                        money: 0
+                    },
+                    {
+                        text: "Complain loudly.",
+                        result: "Venting helps, but you're still annoyed. -5 Energy, -10 Spirit.",
+                        energy: -5,
+                        spirit: -10,
+                        money: 0
+                    }
+                ]
             },
             {
-                type: 'auto',
+                type: 'choice',
                 text: "You smell the sizzle of a Valentino's slice.",
-                result: "The glorious smell boosts your morale. +10 Spirit.",
-                energy: 0,
-                spirit: 10,
-                money: 0
+                choices: [
+                    {
+                        text: "Inhale deeply.",
+                        result: "The glorious smell boosts your morale. +10 Spirit.",
+                        energy: 0,
+                        spirit: 10,
+                        money: 0
+                    },
+                    {
+                        text: "Buy a slice ($5).",
+                        result: "A costly but delicious detour. +15 Energy, +5 Spirit, -$5.",
+                        energy: 15,
+                        spirit: 5,
+                        money: -5
+                    }
+                ]
             },
             {
-                type: 'auto',
-                text: "A scooter zips by, splashing puddle water on you.",
-                result: "Your jeans are soaked. -20 Spirit.",
-                energy: 0,
-                spirit: -20,
-                money: 0
+                type: 'choice',
+                text: "A scooter zips by, splashing puddle water on you!",
+                choices: [
+                    {
+                        text: "Yell at them.",
+                        result: "They're gone. You're just wet and angry. -20 Spirit.",
+                        energy: 0,
+                        spirit: -20,
+                        money: 0
+                    },
+                    {
+                        text: "Sigh and move on.",
+                        result: "You're soaked, but what can you do? -15 Spirit, -5 Energy.",
+                        energy: -5,
+                        spirit: -15,
+                        money: 0
+                    }
+                ]
             },
             {
-                type: 'auto',
+                type: 'choice',
                 text: "You see a rival fan wearing 'that' color.",
-                result: "It fills you with determination. +10 Spirit.",
-                energy: 0,
-                spirit: 10,
-                money: 0
+                choices: [
+                    {
+                        text: "Give them a mean look.",
+                        result: "It fills you with determination. +10 Spirit.",
+                        energy: 0,
+                        spirit: 10,
+                        money: 0
+                    },
+                    {
+                        text: "Yell 'Go Big Red!'",
+                        result: "You shout it loud! +15 Spirit, -5 Energy.",
+                        energy: -5,
+                        spirit: 15,
+                        money: 0
+                    }
+                ]
             },
             {
-                type: 'auto',
-                text: "You get a text: 'Your Canvas quiz is due at kickoff.'",
-                result: "Instant dread. -25 Spirit.",
-                energy: 0,
-                spirit: -25,
-                money: 0
+                type: 'major_obstacle',
+                text: "BZZZT! A text: 'Your Canvas quiz is due at kickoff.'",
+                choices: [
+                    {
+                        text: "Try to forget it.",
+                        result: "The dread is real. It'll hang over you. -25 Spirit.",
+                        energy: 0,
+                        spirit: -25,
+                        money: 0
+                    },
+                    {
+                        text: "Stop and do it.",
+                        result: "You rush through it. C's get degrees. -15 Energy, -10 Spirit, -10 Progress.",
+                        energy: -15,
+                        spirit: -10,
+                        money: 0,
+                        progress: -10
+                    }
+                ]
             },
             {
-                type: 'auto',
-                text: "You find a $10 bill on the ground!",
-                result: "Your luck is turning around! +$10.",
-                energy: 0,
-                spirit: 5,
-                money: 10
+                type: 'choice',
+                text: "You spot a $10 bill on the ground!",
+                choices: [
+                    {
+                        text: "Pocket it!",
+                        result: "Finders keepers! +$10, +5 Spirit.",
+                        energy: 0,
+                        spirit: 5,
+                        money: 10
+                    },
+                    {
+                        text: "Ask around.",
+                        result: "A nearby person says 'Oh, thank you!' and takes it. You feel good, but... -10 Energy, +10 Spirit.",
+                        energy: -10,
+                        spirit: 10,
+                        money: 0
+                    }
+                ]
             },
             {
                 type: 'choice',
@@ -314,7 +387,7 @@
                         money: 0
                     },
                     {
-                        text: "Pretend you have a call and walk off.",
+                        text: "Pretend you have a call.",
                         result: "You feel a little guilty, but save time. -10 Spirit.",
                         energy: 0,
                         spirit: -10,
@@ -387,14 +460,14 @@
                 text: "Disaster! You pat your pocket and... YOU LOST YOUR N-CARD!",
                 choices: [
                     {
-                        text: "Go to the ticket office and pay the $25 replacement fee.",
+                        text: "Pay $25 replacement fee.",
                         result: "It's a painful loss, but you have your ticket. -$25, -25 Spirit.",
                         energy: -5,
                         spirit: -25,
                         money: -25
                     },
                     {
-                        text: "Try to find a friend who can 'get you in'.",
+                        text: "Try to find a friend to help.",
                         result: "You waste 20 minutes and they can't help. -20 Energy, -20 Spirit.",
                         energy: -20,
                         spirit: -20,
@@ -408,14 +481,14 @@
                 choices: [
                     {
                         text: "Be a good friend and go back.",
-                        result: "You trek all the way back to your dorm. -30 Progress, -25 Energy.",
+                        result: "You trek all the way back. -30 Progress, -25 Energy.",
                         energy: -25,
                         spirit: 0,
                         money: 0,
                         progress: -30 
                     },
                     {
-                        text: "Text them 'Sorry, R.A. is on duty. GBR.'",
+                        text: "Text them 'Sorry, R.A. is on duty.'",
                         result: "You feel terrible. But the game is calling. -35 Spirit.",
                         energy: 0,
                         spirit: -35,
@@ -424,42 +497,78 @@
                 ]
             },
             {
-                type: 'auto',
+                type: 'choice',
                 text: "You hear 'Sirius' playing from a nearby tailgate.",
-                result: "It gets you hyped! +15 Spirit.",
-                energy: 0,
-                spirit: 15,
-                money: 0
+                choices: [
+                    {
+                        text: "Nod along to the beat.",
+                        result: "It gets you hyped! +15 Spirit.",
+                        energy: 0,
+                        spirit: 15,
+                        money: 0
+                    },
+                    {
+                        text: "Sing out loud!",
+                        result: "You're a little off-key, but who cares! +20 Spirit, -5 Energy.",
+                        energy: -5,
+                        spirit: 20,
+                        money: 0
+                    }
+                ]
             },
             {
-                type: 'auto',
-                text: "A sudden, cold gust of wind almost steals your hat.",
-                result: "You save it, but the stress is real. -8 Energy, -8 Spirit.",
-                energy: -8,
-                spirit: -8,
-                money: 0
+                type: 'choice',
+                text: "A sudden, cold gust of wind almost steals your hat!",
+                choices: [
+                    {
+                        text: "Grab your hat!",
+                        result: "You save it, but the stress is real. -8 Energy, -8 Spirit.",
+                        energy: -8,
+                        spirit: -8,
+                        money: 0
+                    },
+                    {
+                        text: "Hunker down.",
+                        result: "You brace yourself against the wind. -10 Energy, -5 Spirit.",
+                        energy: -10,
+                        spirit: -5,
+                        money: 0
+                    }
+                ]
             },
             {
-                type: 'auto',
+                type: 'choice',
                 text: "The line to cross 10th & Q street is massive.",
-                result: "You're stuck waiting for the light. -8 Energy.",
-                energy: -8,
-                spirit: 0,
-                money: 0
+                choices: [
+                    {
+                        text: "Wait patiently.",
+                        result: "You're stuck waiting for the light. -8 Energy.",
+                        energy: -8,
+                        spirit: 0,
+                        money: 0
+                    },
+                    {
+                        text: "Jaywalk (Risky!)",
+                        result: "You dart across! A car honks! +5 Energy (adrenaline), -15 Spirit (stress).",
+                        energy: 5,
+                        spirit: -15,
+                        money: 0
+                    }
+                ]
             },
             {
                 type: 'choice',
                 text: "You're getting hungry. You pass a Runza.",
                 choices: [
                     {
-                        text: "Buy a classic Runza.",
+                        text: "Buy a classic Runza ($8).",
                         result: "A Nebraska tradition! -$8, +20 Energy, +5 Spirit.",
                         energy: 20,
                         spirit: 5,
                         money: -8
                     },
                     {
-                        text: "Save your money for later.",
+                        text: "Save your money.",
                         result: "Your stomach growls in protest. -5 Energy.",
                         energy: -5,
                         spirit: 0,
@@ -513,7 +622,7 @@
                 choices: [
                     {
                         text: "Panic and run to the Union for Wi-Fi.",
-                        result: "You sprint there and back. It works, but you're exhausted. -30 Energy, -20 Spirit.",
+                        result: "You sprint there and back. It works, but... -30 Energy, -20 Spirit.",
                         energy: -30,
                         spirit: -20,
                         money: 0
@@ -533,7 +642,7 @@
                 choices: [
                     {
                         text: "Tell them to catch a bus and you'll wait.",
-                        result: "They're your responsibility. You wait for them. -20 Energy, -25 Spirit.",
+                        result: "They're your responsibility. You wait. -20 Energy, -25 Spirit.",
                         energy: -20,
                         spirit: -25,
                         money: 0
@@ -548,31 +657,64 @@
                 ]
             },
             {
-                type: 'auto',
+                type: 'choice',
                 text: "A friendly alum hands you a 'Beat The Other Team' sticker.",
-                result: "A nice gesture. +10 Spirit.",
-                energy: 0,
-                spirit: 10,
-                money: 0
+                choices: [
+                    {
+                        text: "Take it.",
+                        result: "A nice gesture. +10 Spirit.",
+                        energy: 0,
+                        spirit: 10,
+                        money: 0
+                    },
+                    {
+                        text: "Politely decline.",
+                        result: "You have no more room on your jacket. -5 Spirit.",
+                        energy: 0,
+                        spirit: -5,
+                        money: 0
+                    }
+                ]
             },
-            
-            // --- NEW DAILY NEBRASKAN EVENTS ---
-            
             {
-                type: 'auto',
-                text: "You pass a Daily Nebraskan newspaper box. The headline reads 'HUSKERS POISED FOR VICTORY!'",
-                result: "The positive news gets you pumped! +10 Spirit.",
-                energy: 0,
-                spirit: 10,
-                money: 0
+                type: 'choice',
+                text: "You pass a Daily Nebraskan newspaper box. Headline: 'HUSKERS POISED FOR VICTORY!'",
+                choices: [
+                    {
+                        text: "Glance and keep walking.",
+                        result: "The positive news gets you pumped! +10 Spirit.",
+                        energy: 0,
+                        spirit: 10,
+                        money: 0
+                    },
+                    {
+                        text: "Stop to read the article.",
+                        result: "You're inspired, but you wasted time. +15 Spirit, -5 Energy.",
+                        energy: -5,
+                        spirit: 15,
+                        money: 0
+                    }
+                ]
             },
             {
-                type: 'auto',
-                text: "You see a DN photographer taking crowd shots. You wave, but they don't see you.",
-                result: "You feel invisible. -5 Spirit.",
-                energy: 0,
-                spirit: -5,
-                money: 0
+                type: 'choice',
+                text: "You see a DN photographer taking crowd shots.",
+                choices: [
+                    {
+                        text: "Wave and pose!",
+                        result: "You might be in the paper! +10 Spirit.",
+                        energy: 0,
+                        spirit: 10,
+                        money: 0
+                    },
+                    {
+                        text: "Look away.",
+                        result: "You feel invisible. -5 Spirit.",
+                        energy: 0,
+                        spirit: -5,
+                        money: 0
+                    }
+                ]
             },
             {
                 type: 'choice',
@@ -599,8 +741,8 @@
                 text: "A Daily Nebraskan reporter stops you! 'Can I get a quote about your gameday outfit?'",
                 choices: [
                     {
-                        text: "Strike a pose and give a great quote.",
-                        result: "You feel like a celebrity! You'll be in tomorrow's paper! +20 Spirit.",
+                        text: "Strike a pose and give a quote.",
+                        result: "You feel like a celebrity! +20 Spirit.",
                         energy: 0,
                         spirit: 20,
                         money: 0
@@ -614,8 +756,6 @@
                     }
                 ]
             }
-            
-            // --- END OF NEW EVENTS ---
         ];
 
         // --- EVENT LISTENERS ---
@@ -716,6 +856,8 @@
             triggerRandomEvent();
         }
 
+        // --- REVISED FUNCTION ---
+        // Removed the 'auto' event logic, as all events are now choices.
         function triggerRandomEvent() {
             // --- LOGIC TO PREVENT REPEATS ---
             let newIndex;
@@ -730,27 +872,16 @@
             logMessage(event.text, 'choice');
             actionsContainer.innerHTML = ''; // Clear "Continue" button
 
-            if (event.type === 'auto') {
-                // Automatically apply results
-                applyStatChanges(event);
-                logMessage(event.result, 'penalty');
-                updateStatsUI();
-                if (checkGameState()) return;
-                // Put the "Continue" button back
-                showMainAction();
-
-            } else if (event.type === 'choice' || event.type === 'major_obstacle') {
-                // Create choice buttons
-                event.choices.forEach(choice => {
-                    const choiceButton = createButton(choice.text, () => resolveChoice(choice));
-                    
-                    // Check if choice is affordable
-                    if (choice.money < 0 && gameState.money < Math.abs(choice.money)) {
-                        choiceButton.disabled = true;
-                    }
-                    actionsContainer.appendChild(choiceButton);
-                });
-            }
+            // All events are 'choice' or 'major_obstacle', so we just create buttons
+            event.choices.forEach(choice => {
+                const choiceButton = createButton(choice.text, () => resolveChoice(choice));
+                
+                // Check if choice is affordable
+                if (choice.money < 0 && gameState.money < Math.abs(choice.money)) {
+                    choiceButton.disabled = true;
+                }
+                actionsContainer.appendChild(choiceButton);
+            });
         }
 
         function resolveChoice(choice) {
