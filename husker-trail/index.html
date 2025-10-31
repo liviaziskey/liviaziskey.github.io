@@ -177,11 +177,12 @@
     <script>
         // --- GAME STATE ---
         let gameState = {
-            money: 40, // <-- DIFFICULTY CHANGE: Less starting money
+            money: 40,
             energy: 100,
             spirit: 100,
             progress: 0,
-            gameActive: false
+            gameActive: false,
+            lastEventIndex: -1 // <-- NEW: Tracks the last event to prevent repeats
         };
 
         // --- DOM ELEMENTS ---
@@ -195,13 +196,13 @@
         const statProgressBar = document.getElementById('stat-progress-bar');
 
         // --- GAME EVENTS ARRAY ---
-        // Penalties have been increased for difficulty
+        // (Using the "Hard Mode" tuning from our last conversation)
         const events = [
             {
                 type: 'auto',
                 text: "You trip on a cracked sidewalk on P Street.",
                 result: "You drop your phone, but it's okay. -8 Energy, -5 Spirit.",
-                energy: -8, // <-- Increased penalty
+                energy: -8,
                 spirit: -5,
                 money: 0
             },
@@ -218,7 +219,7 @@
                 text: "A scooter zips by, splashing puddle water on you.",
                 result: "Your jeans are soaked. -20 Spirit.",
                 energy: 0,
-                spirit: -20, // <-- Increased penalty
+                spirit: -20,
                 money: 0
             },
             {
@@ -234,7 +235,7 @@
                 text: "You get a text: 'Your Canvas quiz is due at kickoff.'",
                 result: "Instant dread. -25 Spirit.",
                 energy: 0,
-                spirit: -25, // <-- Increased penalty
+                spirit: -25,
                 money: 0
             },
             {
@@ -252,15 +253,15 @@
                     {
                         text: "Chat politely for a bit.",
                         result: "You talk about the midterm. It's draining. -12 Energy, -8 Spirit.",
-                        energy: -12, // <-- Increased penalty
-                        spirit: -8, // <-- Increased penalty
+                        energy: -12,
+                        spirit: -8,
                         money: 0
                     },
                     {
                         text: "Pretend you have a call and walk off.",
                         result: "You feel a little guilty, but save time. -10 Spirit.",
                         energy: 0,
-                        spirit: -10, // <-- Increased penalty
+                        spirit: -10,
                         money: 0
                     }
                 ]
@@ -312,8 +313,8 @@
                     {
                         text: "Wait in line.",
                         result: "It takes forever. You're tired and sober. -20 Energy, -15 Spirit.",
-                        energy: -20, // <-- Increased penalty
-                        spirit: -15, // <-- Increased penalty
+                        energy: -20,
+                        spirit: -15,
                         money: 0
                     },
                     {
@@ -333,14 +334,14 @@
                         text: "Go to the ticket office and pay the $25 replacement fee.",
                         result: "It's a painful loss, but you have your ticket. -$25, -25 Spirit.",
                         energy: -5,
-                        spirit: -25, // <-- Increased penalty
+                        spirit: -25,
                         money: -25
                     },
                     {
                         text: "Try to find a friend who can 'get you in'.",
                         result: "You waste 20 minutes and they can't help. -20 Energy, -20 Spirit.",
-                        energy: -20, // <-- Increased penalty
-                        spirit: -20, // <-- Increased penalty
+                        energy: -20,
+                        spirit: -20,
                         money: 0
                     }
                 ]
@@ -352,7 +353,7 @@
                     {
                         text: "Be a good friend and go back.",
                         result: "You trek all the way back to your dorm. -30 Progress, -25 Energy.",
-                        energy: -25, // <-- Increased penalty
+                        energy: -25,
                         spirit: 0,
                         money: 0,
                         progress: -30 
@@ -361,7 +362,7 @@
                         text: "Text them 'Sorry, R.A. is on duty. GBR.'",
                         result: "You feel terrible. But the game is calling. -35 Spirit.",
                         energy: 0,
-                        spirit: -35, // <-- Increased penalty
+                        spirit: -35,
                         money: 0
                     }
                 ]
@@ -378,15 +379,15 @@
                 type: 'auto',
                 text: "A sudden, cold gust of wind almost steals your hat.",
                 result: "You save it, but the stress is real. -8 Energy, -8 Spirit.",
-                energy: -8, // <-- Increased penalty
-                spirit: -8, // <-- Increased penalty
+                energy: -8,
+                spirit: -8,
                 money: 0
             },
             {
                 type: 'auto',
                 text: "The line to cross 10th & Q street is massive.",
                 result: "You're stuck waiting for the light. -8 Energy.",
-                energy: -8, // <-- Increased penalty
+                energy: -8,
                 spirit: 0,
                 money: 0
             },
@@ -425,7 +426,7 @@
                         text: "Dodge the camera.",
                         result: "You're not in the mood for fame. -10 Spirit.",
                         energy: 0,
-                        spirit: -10, // <-- Increased penalty
+                        spirit: -10,
                         money: 0
                     }
                 ]
@@ -445,7 +446,7 @@
                         text: "Ignore them.",
                         result: "You're too cool for free beads. -10 Spirit.",
                         energy: 0,
-                        spirit: -10, // <-- Increased penalty
+                        spirit: -10,
                         money: 0
                     }
                 ]
@@ -457,15 +458,15 @@
                     {
                         text: "Panic and run to the Union for Wi-Fi.",
                         result: "You sprint there and back. It works, but you're exhausted. -30 Energy, -20 Spirit.",
-                        energy: -30, // <-- Increased penalty
-                        spirit: -20, // <-- Increased penalty
+                        energy: -30,
+                        spirit: -20,
                         money: 0
                     },
                     {
                         text: "Keep refreshing and hold your phone up.",
                         result: "After 5 stressful minutes, it finally loads! -20 Spirit.",
                         energy: 0,
-                        spirit: -20, // <-- Increased penalty
+                        spirit: -20,
                         money: 0
                     }
                 ]
@@ -477,15 +478,15 @@
                     {
                         text: "Tell them to catch a bus and you'll wait.",
                         result: "They're your responsibility. You wait for them. -20 Energy, -25 Spirit.",
-                        energy: -20, // <-- Increased penalty
-                        spirit: -25, // <-- Increased penalty
+                        energy: -20,
+                        spirit: -25,
                         money: 0
                     },
                     {
                         text: "Tell them 'Good luck. See you inside.'",
                         result: "It's brutal, but the game is calling. -35 Spirit.",
                         energy: 0,
-                        spirit: -35, // <-- Increased penalty
+                        spirit: -35,
                         money: 0
                     }
                 ]
@@ -508,11 +509,12 @@
         function startGame() {
             // Reset game state
             gameState = {
-                money: 40, // <-- DIFFICULTY CHANGE: Reset to new starting money
+                money: 40, 
                 energy: 100,
                 spirit: 100,
                 progress: 0,
-                gameActive: true
+                gameActive: true,
+                lastEventIndex: -1 // <-- NEW: Reset the event tracker
             };
             
             // Clear log and actions
@@ -583,9 +585,9 @@
             if (!gameState.gameActive) return;
 
             // Each step costs more energy and moves you forward less
-            const progressGain = Math.floor(Math.random() * 8) + 9; // 9-16 progress (was 10-19)
+            const progressGain = Math.floor(Math.random() * 8) + 9; // 9-16 progress
             gameState.progress += progressGain;
-            gameState.energy -= 7; // <-- DIFFICULTY CHANGE: Increased energy cost
+            gameState.energy -= 7; // Increased energy cost
             
             logMessage(`You weave through the crowds. +${progressGain} Progress, -7 Energy.`, 'event');
             updateStatsUI();
@@ -598,7 +600,16 @@
         }
 
         function triggerRandomEvent() {
-            const event = events[Math.floor(Math.random() * events.length)];
+            // --- NEW LOGIC TO PREVENT REPEATS ---
+            let newIndex;
+            // Keep picking a new event until it's different from the last one
+            do {
+                newIndex = Math.floor(Math.random() * events.length);
+            } while (newIndex === gameState.lastEventIndex && events.length > 1); // Check events.length > 1 to prevent infinite loop
+
+            gameState.lastEventIndex = newIndex; // Store this event as the "last" one
+            const event = events[newIndex];
+            // --- END OF NEW LOGIC ---
             
             logMessage(event.text, 'choice');
             actionsContainer.innerHTML = ''; // Clear "Continue" button
