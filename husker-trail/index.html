@@ -57,7 +57,7 @@
 
         /* Stats bar */
         #stats-bar {
-            display: flex;
+            display: none; /* --- NEW: Initially hidden --- */
             justify-content: space-around;
             padding: 15px;
             border-bottom: 3px solid #00FF00;
@@ -115,7 +115,22 @@
         #game-log .instructions strong {
             color: #FF6347; /* Tomato Red for emphasis on stats */
         }
-        /* --- END NEW STYLES --- */
+        
+        /* --- STYLES FOR ASCII ART --- */
+        pre.art-message {
+            text-align: center;
+            line-height: 1.2;
+            font-family: 'Press Start 2P', cursive;
+            margin: 15px 0;
+        }
+        
+        pre.art-win {
+            color: #FF0000; /* Husker Red */
+        }
+        
+        pre.art-lose {
+            color: #FF6347; /* Tomato Red */
+        }
 
 
         /* Game message styles (with indent) */
@@ -197,9 +212,9 @@
         </header>
 
         <div id="stats-bar">
-            <span class="stat" id="stat-money">Money: $40</span>
-            <span class="stat" id="stat-energy">Energy: 100</span>
-            <span class="stat" id="stat-spirit">Spirit: 100</span>
+            <span class="stat" id="stat-money"></span>
+            <span class="stat" id="stat-energy"></span>
+            <span class="stat" id="stat-spirit"></span>
         </div>
         <div id="stat-progress-bar-container">
             <div id="stat-progress-bar"></div>
@@ -232,27 +247,38 @@
 
     <script>
         // --- GAME STATE ---
-        let gameState = {
-            money: 40,
-            energy: 100,
-            spirit: 100,
-            progress: 0,
-            gameActive: false,
-            lastEventIndex: -1 
-        };
+        // Initially empty; will be populated by launchGame()
+        let gameState = {};
+        
+        // --- ASCII ART STRINGS ---
+        const winArt =
+`         _
+        |_|
+       |___|
+      |     |
+     /|     |\\
+    | |     | |
+    |_|_____|_|`;
+
+        const loseArt =
+`    ( ; _ ; )
+    (   _   )
+    /   |   \\
+   (    |    )`;
+
 
         // --- DOM ELEMENTS ---
         const gameLog = document.getElementById('game-log');
         const actionsContainer = document.getElementById('actions-container');
         const startButton = document.getElementById('start-button');
         
+        const statsBar = document.getElementById('stats-bar');
         const statMoney = document.getElementById('stat-money');
         const statEnergy = document.getElementById('stat-energy');
         const statSpirit = document.getElementById('stat-spirit');
         const statProgressBar = document.getElementById('stat-progress-bar');
 
         // --- GAME EVENTS ARRAY ---
-        // ALL events are now 'choice' or 'major_obstacle'
         const events = [
             {
                 type: 'choice',
@@ -763,27 +789,80 @@
 
         // --- GAME FUNCTIONS ---
 
+        // NEW: Shows the Major Selection screen
         function startGame() {
-            // Reset game state
-            gameState = {
-                money: 40, 
-                energy: 100,
-                spirit: 100,
-                progress: 0,
-                gameActive: true,
-                lastEventIndex: -1 
-            };
-            
-            // Clear log (removes instructions) and actions
+            // Clear log, hide stats, clear actions
             gameLog.innerHTML = '';
             actionsContainer.innerHTML = '';
+            statsBar.style.display = 'none';
+            statProgressBar.style.width = '0%'; // Reset progress bar
             
-            logMessage("Your trek to Memorial Stadium begins! It's 2 hours to kickoff.", 'event');
+            logMessage("Choose your college:", 'choice');
+            logMessage("Journalism: Start with +15 Energy, but -$5.", 'instructions');
+            logMessage("Business: Start with +$15 Money, but -10 Spirit.", 'instructions');
+            logMessage("Engineering: Lose energy 20% slower, but start with -20 Energy.", 'instructions');
+            logMessage("Arts & Sciences: Start with +15 Spirit, but -10 Energy.", 'instructions');
+
+            // Create buttons for each major
+            actionsContainer.appendChild(createButton("Journalism", () => selectMajor('journalism')));
+            actionsContainer.appendChild(createButton("Business", () => selectMajor('business')));
+            actionsContainer.appendChild(createButton("Engineering", () => selectMajor('engineering')));
+            actionsContainer.appendChild(createButton("Arts & Sciences", () => selectMajor('arts-sci')));
+        }
+
+        // NEW: Sets the player's initial stats based on their major
+        function selectMajor(major) {
+            let money = 40, energy = 100, spirit = 100, energyDrain = 7;
+            let majorName = "Student";
+
+            switch (major) {
+                case 'journalism':
+                    energy += 15;
+                    money -= 5;
+                    majorName = "Journalism Student";
+                    break;
+                case 'business':
+                    money += 15;
+                    spirit -= 10;
+                    majorName = "Business Student";
+                    break;
+                case 'engineering':
+                    energy -= 20;
+                    energyDrain = 5; // 20% easier trek (7 * 0.71 ≈ 5)
+                    majorName = "Engineering Student";
+                    break;
+                case 'arts-sci':
+                    spirit += 15;
+                    energy -= 10;
+                    majorName = "Arts & Sciences Student";
+                    break;
+            }
+            
+            // Pass these initial stats to launch the game
+            launchGame({ money, energy, spirit, energyDrain, majorName });
+        }
+
+        // NEW: This is the old startGame() function, now it initializes the game *after* a major is chosen
+        function launchGame(initialState) {
+            gameState = {
+                ...initialState,
+                progress: 0,
+                gameActive: true,
+                lastEventIndex: -1
+            };
+            
+            // Clear major selection buttons
+            actionsContainer.innerHTML = '';
+            // Show stats bar
+            statsBar.style.display = 'flex';
+            
+            logMessage(`Your trek as a ${gameState.majorName} begins!`, 'event');
             logMessage("You leave your apartment near 14th and P.", 'event');
 
             updateStatsUI();
             showMainAction();
         }
+
 
         // Updates the stats display
         function updateStatsUI() {
@@ -821,6 +900,15 @@
             // Auto-scroll to bottom
             gameLog.scrollTop = gameLog.scrollHeight;
         }
+        
+        // NEW: Adds ASCII art to the game log
+        function logArt(message, className = '') {
+            const pre = document.createElement('pre');
+            pre.textContent = message;
+            pre.classList.add(className, 'art-message');
+            gameLog.appendChild(pre);
+            gameLog.scrollTop = gameLog.scrollHeight;
+        }
 
         // Shows the main "Continue" button
         function showMainAction() {
@@ -841,12 +929,12 @@
         function takeStep() {
             if (!gameState.gameActive) return;
 
-            // Each step costs more energy and moves you forward less
             const progressGain = Math.floor(Math.random() * 8) + 9; // 9-16 progress
             gameState.progress += progressGain;
-            gameState.energy -= 7; 
+            // Use the variable energy drain
+            gameState.energy -= gameState.energyDrain; 
             
-            logMessage(`You weave through the crowds. +${progressGain} Progress, -7 Energy.`, 'event');
+            logMessage(`You weave through the crowds. +${progressGain} Progress, -${gameState.energyDrain} Energy.`, 'event');
             updateStatsUI();
 
             // Check for win condition
@@ -856,8 +944,6 @@
             triggerRandomEvent();
         }
 
-        // --- REVISED FUNCTION ---
-        // Removed the 'auto' event logic, as all events are now choices.
         function triggerRandomEvent() {
             // --- LOGIC TO PREVENT REPEATS ---
             let newIndex;
@@ -867,7 +953,6 @@
 
             gameState.lastEventIndex = newIndex; 
             const event = events[newIndex];
-            // --- END OF LOGIC ---
             
             logMessage(event.text, 'choice');
             actionsContainer.innerHTML = ''; // Clear "Continue" button
@@ -913,18 +998,21 @@
             if (gameState.energy <= 0) {
                 logMessage("You've run out of energy. The couch calls to you...", 'lose');
                 logMessage("You turn around and go home to take a nap. Game Over.", 'lose');
+                logArt(loseArt, 'art-lose'); // <-- ADD ART
                 endGame(false);
                 return true;
             }
             if (gameState.spirit <= 0) {
                 logMessage("You're too demoralized. You can't handle the crowds.", 'lose');
                 logMessage("You decide to just watch the game from a bar. Game Over.", 'lose');
+                logArt(loseArt, 'art-lose'); // <-- ADD ART
                 endGame(false);
                 return true;
             }
             if (gameState.money < 0) {
                 logMessage("You check your bank account. You're broke!", 'lose');
                 logMessage("You can't even afford a water. You go home. Game Over.", 'lose');
+                logArt(loseArt, 'art-lose'); // <-- ADD ART
                 endGame(false);
                 return true;
             }
@@ -938,12 +1026,14 @@
 
             if (isWin) {
                 logMessage("YOU'VE MADE IT!", 'win');
-                logMessage("You find your seat just in time for the Tunnel Walk! GO BIG RED!", 'win');
+                logMessage("You find your seat just in time for the Tunnel Walk!", 'win');
+                logArt(winArt, 'art-win'); // <-- ADD ART
+                logMessage("GO BIG RED!", 'win');
                 statProgressBar.style.width = '100%';
                 statProgressBar.style.backgroundColor = '#FF0000';
             }
 
-            // Show "Play Again" button
+            // Show "Play Again" button, which now calls startGame() (major selection)
             const playAgainButton = createButton('Play Again?', startGame);
             actionsContainer.appendChild(playAgainButton);
         }
