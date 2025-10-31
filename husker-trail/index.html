@@ -365,7 +365,143 @@
                         money: 0
                     }
                 ]
-            }
+            },
+            
+            // --- NEW EVENTS ADDED HERE ---
+            {
+                type: 'auto',
+                text: "You hear 'Sirius' playing from a nearby tailgate.",
+                result: "It gets you hyped! +15 Spirit.",
+                energy: 0,
+                spirit: 15,
+                money: 0
+            },
+            {
+                type: 'auto',
+                text: "A sudden, cold gust of wind almost steals your hat.",
+                result: "You save it, but the stress is real. -5 Energy, -5 Spirit.",
+                energy: -5,
+                spirit: -5,
+                money: 0
+            },
+            {
+                type: 'auto',
+                text: "The line to cross 10th & Q street is massive.",
+                result: "You're stuck waiting for the light. -5 Energy.",
+                energy: -5,
+                spirit: 0,
+                money: 0
+            },
+            {
+                type: 'choice',
+                text: "You're getting hungry. You pass a Runza.",
+                choices: [
+                    {
+                        text: "Buy a classic Runza.",
+                        result: "A Nebraska tradition! -$8, +20 Energy, +5 Spirit.",
+                        energy: 20,
+                        spirit: 5,
+                        money: -8
+                    },
+                    {
+                        text: "Save your money for later.",
+                        result: "Your stomach growls in protest. -5 Energy.",
+                        energy: -5,
+                        spirit: 0,
+                        money: 0
+                    }
+                ]
+            },
+            {
+                type: 'choice',
+                text: "A local news crew is interviewing fans live.",
+                choices: [
+                    {
+                        text: "Give a 'Go Big Red!' soundbite.",
+                        result: "You're a natural! Your friends see you on TV. +15 Spirit.",
+                        energy: 0,
+                        spirit: 15,
+                        money: 0
+                    },
+                    {
+                        text: "Dodge the camera.",
+                        result: "You're not in the mood for fame. -5 Spirit.",
+                        energy: 0,
+                        spirit: -5,
+                        money: 0
+                    }
+                ]
+            },
+            {
+                type: 'choice',
+                text: "Someone is handing out free red bead necklaces.",
+                choices: [
+                    {
+                        text: "Take one.",
+                        result: "You look festive! +10 Spirit.",
+                        energy: 0,
+                        spirit: 10,
+                        money: 0
+                    },
+                    {
+                        text: "Ignore them.",
+                        result: "You're too cool for free beads. -5 Spirit.",
+                        energy: 0,
+                        spirit: -5,
+                        money: 0
+                    }
+                ]
+            },
+            {
+                type: 'major_obstacle',
+                text: "The digital ticket on your phone won't load! No service!",
+                choices: [
+                    {
+                        text: "Panic and run to the Union for Wi-Fi.",
+                        result: "You sprint there and back. It works, but you're exhausted. -25 Energy, -15 Spirit.",
+                        energy: -25,
+                        spirit: -15,
+                        money: 0
+                    },
+                    {
+                        text: "Keep refreshing and hold your phone up.",
+                        result: "After 5 stressful minutes, it finally loads! -15 Spirit.",
+                        energy: 0,
+                        spirit: -15,
+                        money: 0
+                    }
+                ]
+            },
+            {
+                type: 'major_obstacle',
+                text: "Your friend texts: 'I'M AT THE BOB DEVANEY CENTER! 😭'",
+                choices: [
+                    {
+                        text: "Tell them to catch a bus and you'll wait.",
+                        result: "They're your responsibility. You wait for them. -15 Energy, -20 Spirit.",
+                        energy: -15,
+                        spirit: -20,
+                        money: 0
+                    },
+                    {
+                        text: "Tell them 'Good luck. See you inside.'",
+                        result: "It's brutal, but the game is calling. -25 Spirit.",
+                        energy: 0,
+                        spirit: -25,
+                        money: 0
+                    }
+                ]
+            },
+            {
+                type: 'auto',
+                text: "A friendly alum hands you a 'Beat The Other Team' sticker.",
+                result: "A nice gesture. +10 Spirit.",
+                energy: 0,
+                spirit: 10,
+                money: 0
+            },
+            // --- END OF NEW EVENTS ---
+
         ];
 
         // --- EVENT LISTENERS ---
