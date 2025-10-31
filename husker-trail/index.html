@@ -4,517 +4,536 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The Husker Trail</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Use Inter font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
     <style>
-        /* --- Retro DOS / Oregon Trail Styling --- */
         body {
-            font-family: 'Courier New', Courier, monospace;
-            background-color: #000000;
-            color: #00FF00; /* Classic green text */
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
+            font-family: 'Inter', sans-serif;
         }
-
-        #game-container {
-            width: 90%;
-            max-width: 600px;
-            border: 3px double #00FF00;
-            padding: 20px;
-            box-shadow: 0 0 15px #00FF00;
+        /* Custom styles for the energy bar transition */
+        #energy-bar-fill {
+            transition: width 0.5s ease-in-out;
         }
-
-        /* --- Screens --- */
-        .screen {
-            display: none; /* All screens hidden by default */
+        /* Simple pixel-style box shadow */
+        .pixel-shadow {
+            box-shadow: 6px 6px 0px 0px rgba(0,0,0,0.75);
         }
-
-        #start-screen {
-            display: block; /* Show start screen initially */
-            text-align: center;
+        .pixel-shadow-sm {
+            box-shadow: 3px 3px 0px 0px rgba(0,0,0,0.75);
         }
-
-        #end-screen {
-            text-align: center;
+        .btn-pixel {
+            box-shadow: 4px 4px 0px 0px rgba(0,0,0,0.9);
+            transform: translate(0, 0);
+            transition: all 0.1s ease-out;
         }
-
-        h1, h2 {
-            text-align: center;
-            letter-spacing: 2px;
-            animation: flicker 1.5s infinite alternate;
+        .btn-pixel:hover {
+            box-shadow: 2px 2px 0px 0px rgba(0,0,0,0.9);
+            transform: translate(1px, 1px);
         }
-
-        p, pre {
-            font-size: 1.1rem;
-            line-height: 1.6;
+        .btn-pixel:active {
+            box-shadow: 0px 0px 0px 0px rgba(0,0,0,0.9);
+            transform: translate(4px, 4px);
         }
-
-        /* Flicker animation for headers */
-        @keyframes flicker {
-          0%, 18%, 22%, 25%, 53%, 57%, 100% {
-            text-shadow:
-              0 0 4px #00FF00,
-              0 0 11px #00FF00,
-              0 0 19px #00FF00,
-              0 0 40px #0f0,
-              0 0 80px #0f0;
-          }
-          20%, 24%, 55% {
-            text-shadow: none;
-          }
-        }
-
-        /* --- Game Elements --- */
-        #stats-bar {
-            border-bottom: 2px solid #00FF00;
-            padding-bottom: 10px;
-            margin-bottom: 20px;
-            display: flex;
-            justify-content: space-around;
-            flex-wrap: wrap;
-        }
-
-        .stat {
-            margin: 5px 10px;
-        }
-
-        #event-image {
-            font-size: 0.8rem;
-            text-align: center;
-            line-height: 1.2;
-            padding: 10px;
-            border: 1px dashed #00FF00;
-            margin-bottom: 20px;
-        }
-
-        #choices-container {
-            margin-top: 20px;
-        }
-
-        button {
-            font-family: 'Courier New', Courier, monospace;
-            background-color: #00FF00;
-            color: #000000;
-            border: none;
-            padding: 10px 15px;
-            font-size: 1rem;
-            cursor: pointer;
-            display: block;
-            width: 100%;
-            margin-top: 10px;
-            text-align: left;
-        }
-
-        button:hover {
-            background-color: #000000;
-            color: #00FF00;
-            border: 1px solid #00FF00;
-        }
-
-        #major-selection button {
-            text-align: center;
-        }
-
     </style>
 </head>
-<body>
+<body class="bg-gray-200 flex items-center justify-center min-h-screen p-4">
 
-    <div id="game-container">
+    <!-- Main Game Container -->
+    <div id="game-container" class="w-full max-w-lg bg-white rounded-xl border-4 border-black pixel-shadow p-6 space-y-4">
 
-        <div id="start-screen" class="screen">
-            <h1>THE HUSKER TRAIL</h1>
-            <p>You are a UNL student. Your goal: survive the week and make it to the Husker game on Saturday.</p>
-            <p>Choose your major to begin:</p>
-            
-            <div id="major-selection">
-                <button onclick="startGame('journalism')">
-                    <strong>Journalism</strong><br>
-                    (Starts with high Energy, but low Money)
-                </button>
-                <button onclick="startGame('engineering')">
-                    <strong>Engineering</strong><br>
-                    (Starts with high Grades, but low Energy)
-                </button>
-                <button onclick="startGame('business')">
-                    <strong>Business</strong><br>
-                    (Starts with high Money, but low Grades)
-                </button>
-            </div>
-            
-            <pre style="margin-top: 20px; text-align: left;">
-   /~\
-  |oo )
-  _\=/_
- /  _  \
-//|/.\|\\
-\\ \_/  ||
- \___/  ||
-   || ||
-   || ||
-   || ||
-  .'  '.
-  `----`
-GO BIG RED
-            </pre>
+        <!-- Start Screen -->
+        <div id="start-screen" class="text-center space-y-4">
+            <!-- Husker 'N' SVG -->
+            <svg class="w-24 h-24 mx-auto text-red-600" fill="currentColor" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                <path d="M0,0 H100 V100 H0 V0 Z M25,15 H42 V42 H58 V15 H75 V85 H58 V58 H42 V85 H25 V15 Z"/>
+            </svg>
+            <h1 class="text-4xl font-black text-black tracking-tighter">THE HUSKER TRAIL</h1>
+            <p class="text-lg text-gray-700">
+                You are a UNL student. Your goal: Survive the week, fight off academic probation, and make it to Memorial Stadium by Saturday.
+            </p>
+            <p class="font-bold text-xl">Good luck. GBR.</p>
+            <button id="start-button" class="w-full bg-red-600 text-white text-2xl font-bold py-4 px-6 rounded-lg border-2 border-black btn-pixel">
+                Start Your Week
+            </button>
         </div>
 
-        <div id="game-screen" class="screen">
-            <h2 id="day-display">Current Day: Monday</h2>
-            
-            <div id="stats-bar">
-                <span class="stat" id="money-stat">Money: $0</span>
-                <span class="stat" id="energy-stat">Energy: 0%</span>
-                <span class="stat" id="grades-stat">Grades: 0%</span>
-            </div>
+        <!-- Game Screen -->
+        <div id="game-screen" class="hidden space-y-5">
+            <!-- Header: Day -->
+            <h2 id="current-day-display" class="text-3xl font-black text-center text-red-600 tracking-tight"></h2>
 
-            <pre id="event-image"></pre>
-            <p id="event-text"></p>
-
-            <div id="choices-container">
+            <!-- Stats Display -->
+            <div class="space-y-3">
+                <!-- Energy -->
+                <div>
+                    <label class="font-bold text-black">Energy:</label>
+                    <div class="w-full bg-gray-300 rounded-full h-6 border-2 border-black">
+                        <div id="energy-bar-fill" class="bg-green-500 h-full rounded-full text-right pr-2 font-bold text-white text-sm" style="width: 100%;">
+                            <span id="energy-text">100/100</span>
+                        </div>
+                    </div>
                 </div>
+                
+                <!-- Resources -->
+                <div class="flex justify-between items-center bg-gray-100 p-3 rounded-lg border-2 border-black pixel-shadow-sm">
+                    <div class="text-lg">
+                        <span class="font-bold">Huskerrand:</span>
+                        <span id="huskerrand-display">$50</span>
+                    </div>
+                    <div class="text-lg">
+                        <span class="font-bold">Coffee:</span>
+                        <span id="coffee-display">☕ x 2</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Event Log -->
+            <div class="space-y-2">
+                <label class="font-bold text-black">Event Log:</label>
+                <div id="event-log" class="w-full min-h-[150px] bg-white p-4 rounded-lg border-2 border-black text-gray-800 text-lg overflow-y-auto" style="max-height: 200px;">
+                    Welcome to Monday. You're energized and ready for the week. Or... are you?
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                <button id="advance-day-button" class="w-full bg-red-600 text-white text-lg font-bold py-3 px-4 rounded-lg border-2 border-black btn-pixel">
+                    Advance Day
+                </button>
+                <button id="drink-coffee-button" class="w-full bg-yellow-900 text-white text-lg font-bold py-3 px-4 rounded-lg border-2 border-black btn-pixel">
+                    Drink Coffee
+                </button>
+                <button id="visit-store-button" class="w-full bg-blue-600 text-white text-lg font-bold py-3 px-4 rounded-lg border-2 border-black btn-pixel">
+                    Visit Union
+                </button>
+            </div>
         </div>
 
-        <div id="end-screen" class="screen">
-            <h2 id="end-title"></h2>
-            <p id="end-message"></p>
-            <pre id="end-image" style="text-align: center;"></pre>
-            <button onclick="restartGame()">Play Again?</button>
+        <!-- End Screen -->
+        <div id="end-screen" class="hidden text-center space-y-4">
+            <h1 id="end-title" class="text-4xl font-black tracking-tighter"></h1>
+            <div id="end-image" class="text-6xl"></div>
+            <p id="end-message" class="text-lg text-gray-700"></p>
+            <button id="play-again-button" class="w-full bg-red-600 text-white text-2xl font-bold py-4 px-6 rounded-lg border-2 border-black btn-pixel">
+                Try Again
+            </button>
         </div>
 
     </div>
 
+    <!-- Store Modal -->
+    <div id="store-modal" class="hidden fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center p-4">
+        <div class="w-full max-w-sm bg-white rounded-xl border-4 border-black pixel-shadow p-6 space-y-4">
+            <h2 class="text-3xl font-black text-center text-black tracking-tight">UNL Union Store</h2>
+            <p class="text-center text-gray-700">What do you need to survive?</p>
+            
+            <!-- Store Stats -->
+            <div class="flex justify-between items-center bg-gray-100 p-3 rounded-lg border-2 border-black">
+                <div class="text-lg">
+                    <span class="font-bold">Huskerrand:</span>
+                    <span id="store-huskerrand-display">$50</span>
+                </div>
+            </div>
+
+            <!-- Store Buttons -->
+            <div class="space-y-3">
+                <button id="buy-coffee-button" class="w-full bg-yellow-900 text-white text-lg font-bold py-3 px-4 rounded-lg border-2 border-black btn-pixel">
+                    Buy Coffee ($5)
+                </button>
+                <button id="buy-runza-button" class="w-full bg-green-700 text-white text-lg font-bold py-3 px-4 rounded-lg border-2 border-black btn-pixel">
+                    Buy Runza ($8)
+                </button>
+                <button id="buy-study-guide-button" class="w-full bg-indigo-600 text-white text-lg font-bold py-3 px-4 rounded-lg border-2 border-black btn-pixel">
+                    Buy Study Guide ($20)
+                </button>
+            </div>
+            
+            <hr class="border-gray-300"/>
+
+            <button id="leave-store-button" class="w-full bg-gray-500 text-white text-lg font-bold py-3 px-4 rounded-lg border-2 border-black btn-pixel">
+                Leave Store
+            </button>
+        </div>
+    </div>
+
     <script>
-        // --- C: Define Game State ---
-        let gameState = {
-            player: {
-                money: 50,
-                energy: 70,
-                grades: 70,
-            },
-            currentDayIndex: 0,
-            days: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday (GAMEDAY!)"]
-        };
-
-        // --- C: Define Starting Conditions ---
-        const majors = {
-            journalism: { money: 30, energy: 90, grades: 75 },
-            engineering: { money: 50, energy: 60, grades: 90 },
-            business: { money: 80, energy: 70, grades: 65 }
-        };
-
-        // --- C: Define All Game Events ---
-        const events = [
-            {
-                description: "You wake up for your 8 AM in Oldfather Hall. The line for the Union Starbucks is massive.",
-                image: `
-      ( (
-     ) )
-   .........
-   |       |]
-   |-------|
-   |_______|
-                `,
-                choices: [
-                    { text: "Wait in line for coffee.", effect: { money: -6, energy: +10, grades: -5 } },
-                    { text: "Skip it and go to class tired.", effect: { money: 0, energy: -15, grades: +5 } }
-                ]
-            },
-            {
-                description: "It's Tuesday. You have a huge project due. Your friends want to go to Raising Cane's on P Street.",
-                image: `
-   / \\     / \\     / \\
-  /___\\   /___\\   /___\\
-  | C |   | A |   | N |
-  | H |   | N |   | E |
-  | I |   | E |   | S |
-  |___|   |___|   |___|
-                `,
-                choices: [
-                    { text: "Go with them. (Chicken!)", effect: { money: -12, energy: +15, grades: -10 } },
-                    { text: "Stay and study at Love Library.", effect: { money: 0, energy: -10, grades: +15 } }
-                ]
-            },
-            {
-                description: "A wild Veo scooter is blocking the sidewalk on your way to Bessey Hall.",
-                image: `
-   ,--.
- __|oo|__
- \\    ||
-  \\/--\\/
-  (    )
-                `,
-                choices: [
-                    { text: "Move it (good deed).", effect: { money: 0, energy: -5, grades: +5 } },
-                    { text: "Walk around it. (Not my problem).", effect: { money: 0, energy: 0, grades: 0 } }
-                ]
-            },
-            {
-                description: "POP QUIZ in your Psych 101 class! You didn't do the reading.",
-                image: `
-   _________________
-  |  POP QUIZ!    |
-  | 1. ...?       |
-  | A) ...        |
-  | B) ...        |
-  |_______________|
-                `,
-                choices: [
-                    { text: "Wildly guess.", effect: { money: 0, energy: -5, grades: -20 } },
-                    { text: "Try to 'reason' it out.", effect: { money: 0, energy: -10, grades: +5 } }
-                ]
-            },
-            {
-                description: "You find $20 on the ground outside the Wick Alumni Center!",
-                image: `
-   .----------.
-   | [20]     |
-   |   ($)    |
-   '----------'
-                `,
-                choices: [
-                    { text: "Pocket it!", effect: { money: +20, energy: +5, grades: 0 } },
-                    { text: "Turn it in to the front desk.", effect: { money: 0, energy: +10, grades: -5 } }
-                ]
-            },
-            {
-                description: "Your roommate is playing loud music while you're trying to study.",
-                image: `
-  \\  /
-   \\/
-  /\\ \\
- /  \\ \\
- \\   / /
-  \\ / /
-   \\/
-                `,
-                choices: [
-                    { text: "Ask them to use headphones.", effect: { money: 0, energy: -10, grades: +5 } },
-                    { text: "Go to the library basement.", effect: { money: 0, energy: -5, grades: +10 } }
-                ]
-            },
-            {
-                description: "It's Thursday. Your friends are all going to O Street.",
-                image: `
- |   |   |   |   |
- |---|---|---|---|
- | D | J | ' | S |
- |---|---|---|---|
-                `,
-                choices: [
-                    { text: "Go out! (YOLO)", effect: { money: -30, energy: +20, grades: -20 } },
-                    { text: "Stay in and study.", effect: { money: 0, energy: -15, grades: +15 } }
-                ]
-            },
-            {
-                description: "It's Friday! You need red gear for the game. The Husker Fan Shop is packed.",
-                image: `
-    _   _
-   ( \\ / )
-  ( ( N ) )
-   ( / \\ )
-    '-.-'
-                `,
-                choices: [
-                    { text: "Brave the crowd and buy a new shirt.", effect: { money: -25, energy: -10, grades: 0 } },
-                    { text: "Wear your old, slightly-stained shirt.", effect: { money: 0, energy: 0, grades: 0 } }
-                ]
-            },
-            {
-                description: "You forgot your N-Card and can't get into the Rec Center.",
-                image: `
- .---------------.
- | [N] UNL       |
- |  o            |
- | /|\\  Livia Z. |
- | / \\           |
- '---------------'
-                `,
-                choices: [
-                    { text: "Go all the way back to your dorm.", effect: { money: 0, energy: -15, grades: 0 } },
-                    { text: "Skip the workout.", effect: { money: 0, energy: +10, grades: -5 } }
-                ]
-            }
-        ];
-
-        // --- C: Get HTML Elements ---
+        // --- DOM Elements ---
         const startScreen = document.getElementById('start-screen');
         const gameScreen = document.getElementById('game-screen');
         const endScreen = document.getElementById('end-screen');
+        const storeModal = document.getElementById('store-modal');
 
-        const moneyStat = document.getElementById('money-stat');
-        const energyStat = document.getElementById('energy-stat');
-        const gradesStat = document.getElementById('grades-stat');
+        const startButton = document.getElementById('start-button');
+        const playAgainButton = document.getElementById('play-again-button');
 
-        const dayDisplay = document.getElementById('day-display');
-        const eventImage = document.getElementById('event-image');
-        const eventText = document.getElementById('event-text');
-        const choicesContainer = document.getElementById('choices-container');
+        const currentDayDisplay = document.getElementById('current-day-display');
+        const energyBarFill = document.getElementById('energy-bar-fill');
+        const energyText = document.getElementById('energy-text');
+        const huskerrandDisplay = document.getElementById('huskerrand-display');
+        const coffeeDisplay = document.getElementById('coffee-display');
+        const eventLog = document.getElementById('event-log');
+
+        const advanceDayButton = document.getElementById('advance-day-button');
+        const drinkCoffeeButton = document.getElementById('drink-coffee-button');
+        const visitStoreButton = document.getElementById('visit-store-button');
 
         const endTitle = document.getElementById('end-title');
-        const endMessage = document.getElementById('end-message');
         const endImage = document.getElementById('end-image');
+        const endMessage = document.getElementById('end-message');
+
+        const storeHuskerrandDisplay = document.getElementById('store-huskerrand-display');
+        const buyCoffeeButton = document.getElementById('buy-coffee-button');
+        const buyRunzaButton = document.getElementById('buy-runza-button');
+        const buyStudyGuideButton = document.getElementById('buy-study-guide-button');
+        const leaveStoreButton = document.getElementById('leave-store-button');
+
+        // --- Game State ---
+        let gameState = {};
+
+        const days = [
+            'Monday',
+            'Tuesday',
+            'Wednesday',
+            'Thursday',
+            'Friday',
+            "Saturday (GAMEDAY!)"
+        ];
+
+        // --- Game Events ---
+        // Format: { text, energy, huskerrand, coffee }
+        const goodEvents = [
+            { text: "Your 8 AM class was cancelled!", energy: 15, huskerrand: 0, coffee: 0 },
+            { text: "You found $10 on the ground outside Love Library.", energy: 0, huskerrand: 10, coffee: 0 },
+            { text: "Free coffee at the Gaughan! You grab a cup.", energy: 5, huskerrand: 0, coffee: 1 },
+            { text: "You aced a pop quiz! You feel invincible.", energy: 20, huskerrand: 0, coffee: 0 },
+            { text: "You got a perfect study spot at the Union.", energy: 10, huskerrand: 0, coffee: 0 },
+            { text: "You took a much-needed nap at the CPASS.", energy: 25, huskerrand: 0, coffee: 0 },
+        ];
+
+        const badEvents = [
+            { text: "You got a parking ticket near Bessey Hall.", energy: -10, huskerrand: -30, coffee: 0 },
+            { text: "You pulled an all-nighter for a chem lab.", energy: -35, huskerrand: 0, coffee: 0 },
+            { text: "Your laptop died during a lecture. You forgot your charger.", energy: -15, huskerrand: 0, coffee: 0 },
+            { text: "You ate at CPN... it was a mistake.", energy: -20, huskerrand: 0, coffee: 0 },
+            { text: "A scooter bro almost ran you over by the Union.", energy: -10, huskerrand: 0, coffee: 0 },
+            { text: "You dropped your *full* coffee outside of Brace Lab.", energy: -5, huskerrand: 0, coffee: -1 },
+            { text: "Pop quiz in your 8 AM. You weren't ready.", energy: -20, huskerrand: 0, coffee: 0 },
+            { text: "Your friend from Omaha wants to party. You give in.", energy: -30, huskerrand: -15, coffee: 0 },
+            { text: "You waited 25 minutes in the Union Starbucks line.", energy: -10, huskerrand: 0, coffee: 0 },
+        ];
+
+        const neutralEvents = [
+            { text: "You see a campus squirrel. It is very bold.", energy: -5, huskerrand: 0, coffee: 0 },
+            { text: "A tour group of high schoolers blocks the path.", energy: -5, huskerrand: 0, coffee: 0 },
+            { text: "The line at Chick-fil-A is massive. You sigh.", energy: -5, huskerrand: 0, coffee: 0 },
+            { text: "You wander through the Sheldon. It's... art.", energy: -5, huskerrand: 0, coffee: 0 },
+            { text: "You walk all the way to East Campus for one class.", energy: -15, huskerrand: 0, coffee: 0 },
+        ];
 
 
-        // --- C: Game Logic Functions ---
+        // --- Game Functions ---
 
         /**
-         * Starts the game, sets up the player based on major.
+         * Initializes or resets the game to its starting state.
          */
-        function startGame(major) {
-            // 1. Set player stats from chosen major
-            gameState.player = { ...majors[major] };
-            gameState.currentDayIndex = 0;
-
-            // 2. Update UI
-            startScreen.style.display = 'none';
-            endScreen.style.display = 'none';
-            gameScreen.style.display = 'block';
-
-            // 3. Start the first day
-            runDay();
+        function startGame() {
+            gameState = {
+                day: 0,
+                energy: 100,
+                huskerrand: 50,
+                coffee: 2
+            };
+            
+            startScreen.classList.add('hidden');
+            endScreen.classList.add('hidden');
+            gameScreen.classList.remove('hidden');
+            
+            logEvent("Welcome to Monday. You're energized and ready for the week. Or... are you?", 'system');
+            updateUI();
         }
 
         /**
-         * Resets the game state and returns to the start screen.
+         * Updates all UI elements to reflect the current game state.
          */
-        function restartGame() {
-            endScreen.style.display = 'none';
-            startScreen.style.display = 'block';
-            // State will be reset when startGame() is called
-        }
+        function updateUI() {
+            // Update Day
+            currentDayDisplay.textContent = days[gameState.day];
 
-        /**
-        * Updates the stat display (Money, Energy, Grades).
-        */
-        function updateStats() {
-            moneyStat.textContent = `Money: $${gameState.player.money}`;
-            energyStat.textContent = `Energy: ${gameState.player.energy}%`;
-            gradesStat.textContent = `Grades: ${gameState.player.grades}%`;
-        }
-
-        /**
-         * Core game loop: checks for win/loss, then triggers a new event.
-         */
-        function runDay() {
-            // 1. Check for Gameday (Win condition)
-            if (gameState.currentDayIndex >= gameState.days.length - 1) {
-                winGame();
-                return;
+            // Update Energy
+            if (gameState.energy < 0) gameState.energy = 0;
+            if (gameState.energy > 100) gameState.energy = 100;
+            energyText.textContent = `${gameState.energy}/100`;
+            energyBarFill.style.width = `${gameState.energy}%`;
+            
+            // Change energy bar color based on level
+            if (gameState.energy < 25) {
+                energyBarFill.classList.remove('bg-green-500', 'bg-yellow-500');
+                energyBarFill.classList.add('bg-red-600');
+            } else if (gameState.energy < 50) {
+                energyBarFill.classList.remove('bg-green-500', 'bg-red-600');
+                energyBarFill.classList.add('bg-yellow-500');
+            } else {
+                energyBarFill.classList.remove('bg-yellow-500', 'bg-red-600');
+                energyBarFill.classList.add('bg-green-500');
             }
 
-            // 2. Update Day Display
-            dayDisplay.textContent = `Current Day: ${gameState.days[gameState.currentDayIndex]}`;
+            // Update Resources
+            huskerrandDisplay.textContent = `$${gameState.huskerrand}`;
+            coffeeDisplay.textContent = `☕ x ${gameState.coffee}`;
+
+            // Update Store Display
+            storeHuskerrandDisplay.textContent = `$${gameState.huskerrand}`;
+
+            // Update Button States
+            drinkCoffeeButton.disabled = gameState.coffee <= 0;
+            advanceDayButton.disabled = false;
+            visitStoreButton.disabled = false;
+
+            if (drinkCoffeeButton.disabled) {
+                drinkCoffeeButton.classList.add('opacity-50', 'cursor-not-allowed');
+                drinkCoffeeButton.classList.remove('btn-pixel');
+            } else {
+                drinkCoffeeButton.classList.remove('opacity-50', 'cursor-not-allowed');
+                drinkCoffeeButton.classList.add('btn-pixel');
+            }
             
-            // 3. Update Stats Display
-            updateStats();
-
-            // 4. Trigger a random event
-            triggerEvent();
-        }
-
-        /**
-         * Selects a random event and displays it.
-         */
-        function triggerEvent() {
-            // 1. Get a random event
-            const event = events[Math.floor(Math.random() * events.length)];
-
-            // 2. Display event text and image
-            eventText.textContent = event.description;
-            eventImage.textContent = event.image;
-
-            // 3. Clear old choices
-            choicesContainer.innerHTML = '';
-
-            // 4. Create and display new choices
-            event.choices.forEach((choice, index) => {
-                const button = document.createElement('button');
-                button.textContent = `${index + 1}. ${choice.text}`;
-                button.onclick = () => handleChoice(choice.effect);
-                choicesContainer.appendChild(button);
+            // Disable store buttons if not enough Huskerrand
+            buyCoffeeButton.disabled = gameState.huskerrand < 5;
+            buyRunzaButton.disabled = gameState.huskerrand < 8;
+            buyStudyGuideButton.disabled = gameState.huskerrand < 20;
+            
+            [buyCoffeeButton, buyRunzaButton, buyStudyGuideButton].forEach(btn => {
+                if (btn.disabled) {
+                    btn.classList.add('opacity-50', 'cursor-not-allowed');
+                    btn.classList.remove('btn-pixel');
+                } else {
+                    btn.classList.remove('opacity-50', 'cursor-not-allowed');
+                    btn.classList.add('btn-pixel');
+                }
             });
         }
 
         /**
-         * Processes the player's choice, updates stats, and checks for loss.
+         * Logs a message to the event log.
+         * @param {string} message - The message to display.
+         * @param {string} type - 'system', 'good', 'bad', 'neutral'
          */
-        function handleChoice(effect) {
-            // 1. Apply effects to player stats
-            gameState.player.money += (effect.money || 0);
-            gameState.player.energy += (effect.energy || 0);
-            gameState.player.grades += (effect.grades || 0);
+        function logEvent(message, type = 'neutral') {
+            const p = document.createElement('p');
+            p.textContent = message;
 
-            // 2. Clamp stats (no negative money, energy/grades 0-100)
-            if (gameState.player.energy > 100) gameState.player.energy = 100;
-            if (gameState.player.grades > 100) gameState.player.grades = 100;
-
-            // 3. Check for loss conditions
-            if (checkLoss()) {
-                return; // endGame() is called inside checkLoss()
+            switch(type) {
+                case 'good':
+                    p.className = 'text-green-700 font-semibold';
+                    break;
+                case 'bad':
+                    p.className = 'text-red-700 font-semibold';
+                    break;
+                case 'system':
+                    p.className = 'text-blue-700 font-semibold';
+                    break;
+                case 'neutral':
+                default:
+                    p.className = 'text-gray-800';
             }
-
-            // 4. Advance to the next day
-            gameState.currentDayIndex++;
-            runDay();
+            
+            // Prepend new event to the top
+            eventLog.prepend(p); 
         }
 
         /**
-         * Checks if any stat has hit a losing threshold.
+         * Advances the game to the next day, triggering events and checking win/lose.
          */
-        function checkLoss() {
-            const art = `
-   __   __
-  /  \\ /  \\
- |   X   X   |
- |     |     |
- |    ---    |
-  \\         /
-   \\_______/
-            `;
-            if (gameState.player.money < 0) {
-                endGame("GAME OVER", "You ran out of money and had to ask your parents for help. You're too embarrassed to go to the game.", art);
+        function advanceDay() {
+            // Check for game over on button press
+            if (checkGameOver()) return;
+
+            // Advance day
+            gameState.day++;
+            
+            // Trigger a random event
+            triggerRandomEvent();
+
+            // Apply base energy cost for surviving a day
+            if (gameState.day < 5) { // No cost on the last day
+                logEvent("You survived another day.", 'neutral');
+                gameState.energy -= 5;
+            }
+
+            // Update UI and check for win/lose
+            updateUI();
+            checkWinLose();
+        }
+
+        /**
+         * Triggers a random event and applies its effects.
+         */
+        function triggerRandomEvent() {
+            // Special event: Runza Tuesday!
+            if (gameState.day === 1 && Math.random() < 0.5) { // 50% chance on Tuesday
+                logEvent("It's Runza Tuesday! You treat yourself.", 'good');
+                gameState.huskerrand -= 7; // It's a deal!
+                gameState.energy += 30;
+                return;
+            }
+            
+            // Standard Events
+            const roll = Math.random();
+            let event;
+            let type;
+
+            if (roll < 0.25) { // 25% chance of good event
+                event = goodEvents[Math.floor(Math.random() * goodEvents.length)];
+                type = 'good';
+            } else if (roll < 0.7) { // 45% chance of bad event
+                event = badEvents[Math.floor(Math.random() * badEvents.length)];
+                type = 'bad';
+            } else { // 30% chance of neutral event
+                event = neutralEvents[Math.floor(Math.random() * neutralEvents.length)];
+                type = 'neutral';
+            }
+
+            logEvent(event.text, type);
+            gameState.energy += event.energy;
+            gameState.huskerrand += event.huskerrand;
+            gameState.coffee += event.coffee;
+
+            // Ensure resources don't go below zero
+            if (gameState.huskerrand < 0) gameState.huskerrand = 0;
+            if (gameState.coffee < 0) gameState.coffee = 0;
+        }
+
+        /**
+         * Consumes one coffee to gain energy.
+         */
+        function drinkCoffee() {
+            if (gameState.coffee > 0) {
+                gameState.coffee--;
+                gameState.energy += 25; // Coffee is powerful
+                logEvent("You drank a coffee. You feel wired!", 'system');
+                updateUI();
+            }
+        }
+
+        /**
+         * Opens the store modal.
+         */
+        function visitStore() {
+            storeModal.classList.remove('hidden');
+            advanceDayButton.disabled = true;
+            drinkCoffeeButton.disabled = true;
+            visitStoreButton.disabled = true;
+        }
+
+        /**
+         * Closes the store modal.
+         */
+        function leaveStore() {
+            storeModal.classList.add('hidden');
+            updateUI(); // Re-enables buttons
+        }
+
+        /**
+         * Handles store purchases.
+         * @param {string} item - 'coffee', 'runza', 'study-guide'
+         */
+        function buyItem(item) {
+            const costs = { coffee: 5, runza: 8, 'study-guide': 20 };
+            const cost = costs[item];
+
+            if (gameState.huskerrand >= cost) {
+                gameState.huskerrand -= cost;
+                
+                switch(item) {
+                    case 'coffee':
+                        gameState.coffee++;
+                        logEvent("You bought a coffee for later.", 'system');
+                        break;
+                    case 'runza':
+                        gameState.energy += 35;
+                        logEvent("You bought a Runza. Delicious and energizing!", 'system');
+                        break;
+                    case 'study-guide':
+                        // This is a special item. It gives a big boost.
+                        gameState.energy += 15;
+                        logEvent("You bought a study guide. You feel... prepared?", 'system');
+                        // Maybe it prevents a *future* bad event? (Simplification: just energy)
+                        break;
+                }
+                
+                updateUI();
+            } else {
+                logEvent("You don't have enough Huskerrand for that!", 'bad');
+            }
+        }
+
+
+        /**
+         * Checks for win or lose conditions.
+         * @returns {boolean} - True if the game is over, false otherwise.
+         */
+        function checkGameOver() {
+            if (gameState.energy <= 0) {
+                showEndScreen(false);
                 return true;
             }
-            if (gameState.player.energy <= 0) {
-                endGame("GAME OVER", "You're completely burned out. You slept through your alarm and missed the entire game.", art);
-                return true;
-            }
-            if (gameState.player.grades < 60) {
-                endGame("GAME OVER", "Your grades tanked! You're on academic probation and have to spend Saturday in the library.", art);
+            if (gameState.huskerrand <= 0 && gameState.coffee <= 0 && gameState.energy < 20) {
+                // Soft-lock lose condition
+                showEndScreen(false, "You're out of money, coffee, and energy. You crawl back to your dorm in defeat.");
                 return true;
             }
             return false;
         }
 
-        /**
-         * Displays the end screen (win or loss).
-         */
-        function endGame(title, message, art) {
-            gameScreen.style.display = 'none';
-            endScreen.style.display = 'block';
+        function checkWinLose() {
+            if (checkGameOver()) return;
 
-            endTitle.textContent = title;
-            endMessage.textContent = message;
-            endImage.textContent = art;
+            // Win Condition
+            if (gameState.day === 5) { // Reached Saturday
+                showEndScreen(true);
+            }
         }
 
         /**
-         * Displays the win screen.
+         * Displays the end screen.
+         * @param {boolean} isWin - Whether the player won or lost.
+         * @param {string} [customMessage] - An optional override message.
          */
-        function winGame() {
-            const art = `
-  =====================
- |   MEMORIAL STADIUM  |
- |=====================|
- |  |||    N    |||   |
- |  |||   / \\   |||   |
- |  |||  / _ \\  |||   |
- |__|||_/_/ \\_\\_|||___|
-            `;
-            endGame("YOU MADE IT!", "You survived the week! You walk into Memorial Stadium just in time for the Tunnel Walk. GO BIG RED!", art);
+        function showEndScreen(isWin, customMessage) {
+            gameScreen.classList.add('hidden');
+            endScreen.classList.remove('hidden');
+
+            if (isWin) {
+                endTitle.textContent = "YOU MADE IT!";
+                endTitle.classList.remove('text-black');
+                endTitle.classList.add('text-red-600');
+                endImage.textContent = '🏈';
+                endMessage.textContent = customMessage || `You arrive at Memorial Stadium, exhausted but triumphant. You find your seat just in time for the Tunnel Walk. GO BIG RED!`;
+            } else {
+                endTitle.textContent = "GAME OVER";
+                endTitle.classList.remove('text-red-600');
+                endTitle.classList.add('text-black');
+                endImage.textContent = ' academically...';
+                endMessage.textContent = customMessage || `You've run out of energy and collapsed in your dorm. You slept through the game. You are on academic probation.`;
+            }
         }
+
+        // --- Event Listeners ---
+        startButton.addEventListener('click', startGame);
+        playAgainButton.addEventListener('click', startGame);
+
+        advanceDayButton.addEventListener('click', advanceDay);
+        drinkCoffeeButton.addEventListener('click', drinkCoffee);
+        visitStoreButton.addEventListener('click', visitStore);
+
+        leaveStoreButton.addEventListener('click', leaveStore);
+        buyCoffeeButton.addEventListener('click', () => buyItem('coffee'));
+        buyRunzaButton.addEventListener('click', () => buyItem('runza'));
+        buyStudyGuideButton.addEventListener('click', () => buyItem('study-guide'));
 
     </script>
 </body>
