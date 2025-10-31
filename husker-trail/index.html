@@ -96,9 +96,39 @@
 
         #game-log p {
             margin: 0 0 10px 0;
-            text-indent: 2em;
+            /* No text-indent here by default */
         }
 
+        /* --- NEW STYLES FOR INSTRUCTIONS --- */
+        #game-log .welcome {
+            color: #FFFF00; /* Yellow */
+            font-size: 1.1rem;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        #game-log .instructions {
+             color: #FFFFFF; /* White */
+             line-height: 1.6;
+             margin-bottom: 15px;
+        }
+        
+        #game-log .instructions strong {
+            color: #FF6347; /* Tomato Red for emphasis on stats */
+        }
+        /* --- END NEW STYLES --- */
+
+
+        /* Game message styles (with indent) */
+        #game-log .event,
+        #game-log .choice,
+        #game-log .result,
+        #game-log .penalty,
+        #game-log .win,
+        #game-log .lose {
+            text-indent: 2em; /* Indent for game messages */
+        }
+        
         #game-log .event {
             color: #FFFFFF; /* White for events */
         }
@@ -177,8 +207,23 @@
         </div>
 
         <div id="game-log">
-            </div>
-
+            <p class="welcome">Welcome to The Husker Trail!</p>
+            <p class="instructions">
+                Your mission: Trek from your apartment to Memorial Stadium in time for kickoff. Reach <strong>100% Progress</strong> to win.
+            </p>
+            <p class="instructions">
+                Keep an eye on your stats:
+                <br>  - <strong>Energy:</strong> Your will to keep walking.
+                <br>  - <strong>Spirit:</strong> Your Husker pride.
+                <br>  - <strong>Money:</strong> For... emergencies.
+            </p>
+            <p class="instructions">
+                If <strong>ANY</strong> of these hit 0, your trek is over!
+            </p>
+            <p class="instructions">
+                Click "Start Your Trek" below to begin. Good luck.
+            </p>
+        </div>
         <div id="actions-container">
             <button id="start-button">Start Your Trek</button>
         </div>
@@ -526,7 +571,7 @@
                 lastEventIndex: -1 
             };
             
-            // Clear log and actions
+            // Clear log (removes instructions) and actions
             gameLog.innerHTML = '';
             actionsContainer.innerHTML = '';
             
