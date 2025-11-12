@@ -3,260 +3,249 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UNL Campus Construction: 2014 vs. 2025</title>
+    <title>UNL Campus Construction: 2014 vs 2025</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 20px;
+            background-color: #f4f4f4;
+            color: #333;
             display: flex;
             flex-direction: column;
             align-items: center;
-            background-color: #f0f0f0;
         }
 
         h1 {
-            color: #333;
+            color: #2c3e50;
+            margin-bottom: 15px;
             text-align: center;
-            margin-bottom: 20px;
         }
 
         .instructions {
-            background-color: #e9e9e9;
-            border: 1px solid #ccc;
+            background-color: #e9ecef;
+            border-left: 5px solid #007bff;
             padding: 15px;
-            margin-bottom: 30px;
-            border-radius: 8px;
-            max-width: 600px;
+            margin-bottom: 25px;
+            max-width: 800px;
             text-align: left;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
 
         .instructions p {
-            margin: 0 0 10px 0;
-            line-height: 1.6;
+            margin: 0 0 8px 0;
         }
 
         .instructions strong {
-            color: #555;
+            color: #007bff;
         }
 
         .slider-container {
             position: relative;
-            width: 100%;
-            max-width: 900px; /* Adjust as needed */
+            width: 90%; /* Responsive width */
+            max-width: 900px; /* Max width for larger screens */
+            height: 0;
+            padding-bottom: 66.66%; /* Maintain aspect ratio (e.g., 900px wide / 600px tall = 1.5) Adjust if images have a different aspect ratio */
             overflow: hidden;
-            border: 2px solid #ccc;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            cursor: ew-resize;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            border-radius: 8px;
+            background-color: #fff; /* Fallback background */
         }
 
-        .slider-container img {
-            display: block;
-            width: 100%;
-            height: auto;
-        }
-
-        .image-overlay {
+        .slider-image {
             position: absolute;
+            width: 100%;
+            height: 100%;
             top: 0;
             left: 0;
+            object-fit: cover; /* Ensures images cover the area without distortion */
+        }
+
+        .slider-image.after {
             width: 50%; /* Initial split */
-            height: 100%;
-            overflow: hidden;
         }
 
-        .image-overlay img {
+        .slider-image img {
             width: 100%;
             height: 100%;
-            object-fit: cover; /* Ensures image covers the overlay */
-            position: absolute;
-            top: 0;
-            left: 0;
+            display: block;
+            object-fit: cover;
+            pointer-events: none; /* Prevent dragging the image itself */
         }
 
         .slider-handle {
             position: absolute;
             top: 0;
             left: 50%; /* Initial position */
-            width: 4px;
+            width: 4px; /* Line width */
             height: 100%;
-            background-color: #fff;
+            background-color: #007bff;
             cursor: ew-resize;
             z-index: 10;
-            transform: translateX(-50%);
-        }
-
-        .slider-handle::before,
-        .slider-handle::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background-color: #fff;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            border: 2px solid #555;
+            transform: translateX(-50%); /* Center the handle on its left property */
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .slider-handle::before {
-            margin-left: -15px; /* Arrow left */
-            content: '<';
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            color: #555;
+            content: '↔'; /* Arrow icon */
+            position: absolute;
+            background-color: #007bff;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 50px;
             font-size: 14px;
+            line-height: 1;
+            transform: translateY(-50%);
+            top: 50%;
+            pointer-events: none; /* Don't block handle interaction */
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
 
-        .slider-handle::after {
-            margin-left: 15px; /* Arrow right */
-            content: '>';
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            color: #555;
-            font-size: 14px;
-        }
-
-        /* Labels for images */
         .image-label {
             position: absolute;
-            padding: 5px 10px;
+            top: 10px;
             background-color: rgba(0, 0, 0, 0.6);
             color: white;
+            padding: 5px 10px;
+            border-radius: 3px;
             font-size: 0.9em;
             z-index: 5;
         }
 
-        .label-left {
-            top: 10px;
+        .label-before {
             left: 10px;
         }
 
-        .label-right {
-            top: 10px;
+        .label-after {
             right: 10px;
         }
 
-        /* Mobile adjustments */
+        /* Small screen adjustments */
         @media (max-width: 768px) {
             h1 {
                 font-size: 1.5em;
             }
             .instructions {
                 padding: 10px;
+                margin-bottom: 20px;
                 font-size: 0.9em;
             }
-            .slider-handle::before,
-            .slider-handle::after {
-                width: 15px;
-                height: 15px;
-                font-size: 12px;
+            .slider-handle {
+                width: 3px;
             }
             .slider-handle::before {
-                margin-left: -10px;
+                padding: 6px 10px;
+                font-size: 12px;
             }
-            .slider-handle::after {
-                margin-left: 10px;
+            .image-label {
+                font-size: 0.8em;
+                padding: 3px 8px;
+            }
+            .slider-container {
+                width: 100%;
+                padding-bottom: 75%; /* Adjust aspect ratio for potentially taller mobile views if needed */
             }
         }
     </style>
 </head>
 <body>
-    <h1>UNL Campus Construction: 2014 vs. 2025</h1>
+
+    <h1>UNL Campus Transformation: 2014 vs. Future 2025</h1>
 
     <div class="instructions">
-        <p>Welcome to the UNL Campus Construction slider! Use this interactive tool to visualize the changes and developments on the University of Nebraska-Lincoln campus between two different time periods.</p>
-        <p><strong>How to Use:</strong></p>
-        <ul>
-            <li><strong>Desktop:</strong> Click and drag the vertical white bar (the "slider handle") left or right to reveal more of one image or the other.</li>
-            <li><strong>Mobile:</strong> Touch and drag the vertical white bar left or right with your finger to achieve the same effect.</li>
-        </ul>
-        <p>The image on the left represents an earlier view of the campus (2014), while the image on the right shows a later view (2025, hypothetical for this example). Observe the differences in buildings, landscaping, and overall layout as you move the slider!</p>
+        <p><strong>Instructions:</strong> Use the slider below to compare the University of Nebraska-Lincoln campus. The image on the left shows the campus in <strong>2014</strong>, while the image on the right is a projection of what it will look like in <strong>2025</strong> after planned construction.</p>
+        <p><strong>On Desktop:</strong> Click and drag the vertical bar (or the ↔ icon) left and right to reveal more of either image.</p>
+        <p><strong>On Mobile:</strong> Tap and drag the vertical bar (or the ↔ icon) left and right with your finger.</p>
     </div>
 
     <div class="slider-container">
-        <img src="image1.jpg" alt="UNL Campus 2014" class="base-image">
-        <div class="image-overlay">
-            <img src="image2.jpg" alt="UNL Campus 2025" class="overlay-image">
+        <div class="slider-image before">
+            <img src="https://i.imgur.com/sB3W4vX.jpeg" alt="UNL Campus 2014">
+            <span class="image-label label-before">2014</span>
+        </div>
+        <div class="slider-image after">
+            <img src="https://i.imgur.com/3Qf7s0l.jpeg" alt="UNL Campus 2025">
+            <span class="image-label label-after">2025</span>
         </div>
         <div class="slider-handle"></div>
-        <div class="image-label label-left">2014</div>
-        <div class="image-label label-right">2025</div>
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const sliderContainer = document.querySelector('.slider-container');
-            const imageOverlay = document.querySelector('.image-overlay');
-            const sliderHandle = document.querySelector('.slider-handle');
+        const sliderContainer = document.querySelector('.slider-container');
+        const sliderAfter = document.querySelector('.slider-image.after');
+        const sliderHandle = document.querySelector('.slider-handle');
 
-            let isDragging = false;
+        let isDragging = false;
 
-            const updateSlider = (e) => {
-                let clientX;
-                if (e.touches) { // For mobile
-                    clientX = e.touches[0].clientX;
-                } else { // For desktop
-                    clientX = e.clientX;
-                }
+        function onDrag(e) {
+            if (!isDragging) return;
 
-                const containerRect = sliderContainer.getBoundingClientRect();
-                let x = clientX - containerRect.left;
+            const containerRect = sliderContainer.getBoundingClientRect();
+            let clientX = e.clientX || (e.touches && e.touches[0].clientX); // For touch events
+            if (!clientX) return;
 
-                // Clamp the value to be within the container boundaries
-                x = Math.max(0, Math.min(x, containerRect.width));
+            let newLeft = clientX - containerRect.left;
 
-                const percentage = (x / containerRect.width) * 100;
+            // Clamp the handle within the container boundaries
+            newLeft = Math.max(0, Math.min(newLeft, containerRect.width));
 
-                imageOverlay.style.width = `${percentage}%`;
-                sliderHandle.style.left = `${percentage}%`;
-            };
+            sliderAfter.style.width = newLeft + 'px';
+            sliderHandle.style.left = newLeft + 'px';
+        }
 
-            const startDragging = (e) => {
-                isDragging = true;
-                sliderContainer.classList.add('dragging'); // Add a class for styling if needed
-                updateSlider(e); // Update position immediately on touch/click
-            };
+        // Mouse events
+        sliderHandle.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            sliderContainer.style.cursor = 'ew-resize';
+            e.preventDefault(); // Prevent default browser drag behavior
+        });
 
-            const stopDragging = () => {
-                isDragging = false;
-                sliderContainer.classList.remove('dragging');
-            };
+        document.addEventListener('mouseup', () => {
+            isDragging = false;
+            sliderContainer.style.cursor = 'default';
+        });
 
-            const whileDragging = (e) => {
-                if (isDragging) {
-                    requestAnimationFrame(() => updateSlider(e));
-                }
-            };
+        document.addEventListener('mousemove', onDrag);
 
-            // Desktop events
-            sliderHandle.addEventListener('mousedown', startDragging);
-            document.addEventListener('mouseup', stopDragging);
-            document.addEventListener('mousemove', whileDragging);
+        // Touch events
+        sliderHandle.addEventListener('touchstart', (e) => {
+            isDragging = true;
+            e.preventDefault(); // Prevent scrolling
+        }, { passive: false });
 
-            // Mobile events
-            sliderHandle.addEventListener('touchstart', startDragging);
-            document.addEventListener('touchend', stopDragging);
-            document.addEventListener('touchmove', whileDragging);
+        document.addEventListener('touchend', () => {
+            isDragging = false;
+        });
 
-            // Initial positioning for overlay image to ensure it aligns
-            // The overlay image itself needs to maintain its full width
-            const overlayImage = document.querySelector('.overlay-image');
-            overlayImage.style.width = `${sliderContainer.offsetWidth}px`;
+        document.addEventListener('touchmove', onDrag, { passive: false });
 
-            // Adjust overlay image width if container resizes
-            window.addEventListener('resize', () => {
-                overlayImage.style.width = `${sliderContainer.offsetWidth}px`;
-                // Also reset slider to middle on resize to prevent issues
-                imageOverlay.style.width = `50%`;
-                sliderHandle.style.left = `50%`;
-            });
+        // Initialize slider position (optional, could be done in CSS as well)
+        // Set initial position to 50%
+        const initialWidth = sliderContainer.clientWidth / 2;
+        sliderAfter.style.width = initialWidth + 'px';
+        sliderHandle.style.left = initialWidth + 'px';
+
+        // Re-adjust on window resize
+        window.addEventListener('resize', () => {
+            const currentContainerWidth = sliderContainer.clientWidth;
+            const currentHandleLeft = parseFloat(sliderHandle.style.left);
+            
+            // If the handle is outside, or not set, re-center it.
+            if (currentHandleLeft < 0 || currentHandleLeft > currentContainerWidth || !currentHandleLeft) {
+                 const newInitialWidth = currentContainerWidth / 2;
+                 sliderAfter.style.width = newInitialWidth + 'px';
+                 sliderHandle.style.left = newInitialWidth + 'px';
+            } else {
+                // If handle is within bounds, maintain its relative position or clamp it.
+                // For simplicity, let's just clamp it if it ends up outside due to resize.
+                const clampedLeft = Math.max(0, Math.min(currentHandleWidth, currentContainerWidth));
+                sliderAfter.style.width = clampedLeft + 'px';
+                sliderHandle.style.left = clampedLeft + 'px';
+            }
         });
     </script>
+
 </body>
 </html>
