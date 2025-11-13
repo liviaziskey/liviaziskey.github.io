@@ -3,278 +3,214 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UNL Campus Construction: 2014 vs. 2025</title>
+    <title>Temple Building: Then & Now</title>
     <style>
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: Arial, sans-serif;
             margin: 0;
             padding: 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            background-color: #f4f4f4;
-            color: #333;
+            background-color: #f0f0f0;
         }
-
         h1 {
             color: #333;
+            margin-bottom: 10px;
             text-align: center;
+        }
+        p {
+            color: #666;
             margin-bottom: 20px;
-            font-size: 2em; /* Added for impact */
+            text-align: center;
+            max-width: 600px;
         }
-
-        .instructions {
-            background-color: #ffffff;
-            border: 1px solid #ddd;
-            padding: 20px;
-            margin-bottom: 30px;
-            border-radius: 8px;
-            max-width: 800px; /* Matched to container */
-            text-align: left;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        }
-
-        .instructions p {
-            margin: 0 0 10px 0;
-            line-height: 1.6;
-        }
-
-        .instructions strong {
-            color: #D50000; /* A little UNL red */
-        }
-        
-        .instructions ul {
-            padding-left: 20px;
-        }
-
-        .slider-container {
+        .image-compare-container {
             position: relative;
-            width: 100%;
-            max-width: 800px; /* Set a max-width for large screens */
+            width: 80%; /* Adjust as needed */
+            max-width: 900px;
+            aspect-ratio: 4/3; /* Adjust based on your image aspect ratio */
             overflow: hidden;
             border: 2px solid #ccc;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            border-radius: 8px; /* Softer edges */
-            /* Force a 1:1 aspect ratio - common for satellite squares */
-            /* aspect-ratio: 1 / 1;  <-- You can uncomment this if your images are perfectly square */
+            cursor: ew-resize;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
-
-        .slider-container img {
-            display: block;
+        .image-compare-container img {
+            position: absolute;
             width: 100%;
-            height: auto;
-            /* Prevent image dragging, which conflicts with slider drag */
-            pointer-events: none; 
-            user-select: none;
+            height: 100%;
+            object-fit: cover;
+            pointer-events: none; /* Prevent image dragging */
         }
-
-        .image-overlay {
+        .image-compare-container .overlay {
             position: absolute;
             top: 0;
-            left: 0;
+            right: 0;
             width: 50%; /* Initial split */
             height: 100%;
             overflow: hidden;
-            border-right: 3px solid white; /* More visible divider line */
         }
-
-        .slider-handle {
+        .image-compare-container .overlay img {
+            left: unset;
+            right: 0;
+            object-position: right;
+        }
+        .image-compare-container .divider {
             position: absolute;
             top: 0;
-            left: 50%; /* Initial position */
-            width: 40px; /* Make the handle easier to grab */
+            left: 50%;
+            width: 4px;
             height: 100%;
-            cursor: ew-resize;
+            background-color: white;
+            transform: translateX(-50%);
             z-index: 10;
-            transform: translateX(-50%); /* Center the handle on the line */
-            display: flex;
-            align-items: center;
-            justify-content: center;
         }
-        
-        .handle-control {
+        .image-compare-container .handle {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
             width: 40px;
             height: 40px;
             background-color: white;
             border-radius: 50%;
-            border: 2px solid #555;
+            border: 2px solid #ccc;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            z-index: 11;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 0 10px rgba(0,0,0,0.3);
-            color: #555;
-            font-family: Arial, sans-serif;
-            font-weight: bold;
-            font-size: 20px;
-            user-select: none;
+            pointer-events: none; /* Let the container handle dragging */
         }
-
-        /* Simple < > arrows inside the circle */
-        .handle-control::before {
-            content: '<';
-            margin-right: 2px;
-        }
-        .handle-control::after {
-            content: '>';
-            margin-left: 2px;
-        }
-
-
-        /* Labels for images */
-        .image-label {
+        .image-compare-container .handle::before,
+        .image-compare-container .handle::after {
+            content: '';
             position: absolute;
-            padding: 6px 12px;
-            background-color: rgba(0, 0, 0, 0.7);
+            width: 10px;
+            height: 2px;
+            background-color: #333;
+        }
+        .image-compare-container .handle::before {
+            left: 8px;
+            transform: rotate(45deg);
+        }
+        .image-compare-container .handle::after {
+            right: 8px;
+            transform: rotate(-45deg);
+        }
+
+        /* Labels for "Then" and "Now" */
+        .label {
+            position: absolute;
+            top: 10px;
+            padding: 5px 10px;
+            background-color: rgba(0, 0, 0, 0.6);
             color: white;
             font-size: 0.9em;
-            font-weight: bold;
+            border-radius: 3px;
             z-index: 5;
-            border-radius: 4px;
-            user-select: none;
         }
-
-        .label-left {
-            top: 10px;
+        .label.left {
             left: 10px;
         }
-
-        .label-right {
-            top: 10px;
+        .label.right {
             right: 10px;
         }
 
-        /* Mobile adjustments */
         @media (max-width: 768px) {
-            h1 {
-                font-size: 1.6em;
+            .image-compare-container {
+                width: 95%;
             }
-            .instructions {
-                padding: 15px;
-                font-size: 0.95em;
+            .image-compare-container .handle {
+                width: 30px;
+                height: 30px;
             }
-            .handle-control {
-                width: 35px;
-                height: 35px;
-                font-size: 18px;
+            .image-compare-container .handle::before,
+            .image-compare-container .handle::after {
+                width: 7px;
             }
         }
     </style>
 </head>
 <body>
-    <h1>UNL Campus Construction: October 2014 vs. March 2025</h1>
+    <h1>The Temple Building: Then & Now</h1>
+    <p>Explore the transformation of the historic Temple Building on the UNL campus. Drag the slider to compare how it looked in the 1920s with its appearance in 2025.</p>
 
-    <div class="instructions">
-        <p>Use this interactive tool to visualize the significant changes on the University of Nebraska-Lincoln campus between 2014 and 2025.</p>
-        <p><strong>How to Use:</strong></p>
-        <ul>
-            <li><strong>Desktop:</strong> Click and drag the white circle handle left or right to reveal more of one image.</li>
-            <li><strong>Mobile:</strong> Touch the white circle and drag it left or right.</li>
-        </ul>
-        <p>The image on the left shows the campus in <strong>October 2014</strong>, and the image on the right shows it in <strong>March 2025</strong>.</p>
-    </div>
-
-    <div class="slider-container" id="slider-container">
-        <img src="campusoctober2014.jpg" alt="UNL Campus October 2014" class="base-image">
+    <div class="image-compare-container" id="imageCompare">
+        <img src="58.jpg" alt="Temple Building in the 1920s" class="base-image">
         
-        <div class="image-overlay" id="image-overlay">
-            <img src="campusmarch2025.jpg" alt="UNL Campus March 2025" class="overlay-image">
+        <div class="overlay">
+            <img src="IMG_5296.jpg" alt="Temple Building in 2025" class="overlay-image">
         </div>
-
-        <div class="slider-handle" id="slider-handle">
-            <div class="handle-control"></div>
-        </div>
-
-        <div class="image-label label-left">October 2014</div>
-        <div class="image-label label-right">March 2025</div>
+        
+        <div class="divider"></div>
+        <div class="handle"></div>
+        <span class="label left">1920s</span>
+        <span class="label right">2025</span>
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const container = document.getElementById('slider-container');
-            const overlay = document.getElementById('image-overlay');
-            const handle = document.getElementById('slider-handle');
-            // We need to select the overlay image itself to adjust its width
-            const overlayImage = overlay.querySelector('img');
+        const container = document.getElementById('imageCompare');
+        const overlay = container.querySelector('.overlay');
+        const divider = container.querySelector('.divider');
+        const handle = container.querySelector('.handle');
 
-            let isDragging = false;
-            
-            // Function to set the overlay image's width based on the container
-            // This is crucial for the "zoom" effect to work properly
-            function sizeOverlayImage() {
-                if (container && overlayImage) {
-                    overlayImage.style.width = container.offsetWidth + 'px';
-                }
+        let isDragging = false;
+
+        function updateSlider(x) {
+            const containerRect = container.getBoundingClientRect();
+            let newX = x - containerRect.left;
+
+            // Clamp the position to be within the container
+            if (newX < 0) {
+                newX = 0;
+            } else if (newX > containerRect.width) {
+                newX = containerRect.width;
             }
 
-            // Set the size on initial load
-            sizeOverlayImage();
-            
-            // Re-calculate size on window resize
-            window.addEventListener('resize', sizeOverlayImage);
+            const percentage = (newX / containerRect.width) * 100;
 
-            // The main slider logic
-            const updateSlider = (clientX) => {
-                const containerRect = container.getBoundingClientRect();
-                let x = clientX - containerRect.left;
+            overlay.style.width = `${100 - percentage}%`;
+            divider.style.left = `${percentage}%`;
+            handle.style.left = `${percentage}%`;
+        }
 
-                // Clamp the value to be within the container boundaries
-                x = Math.max(0, Math.min(x, containerRect.width));
+        container.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            updateSlider(e.clientX);
+        });
 
-                const percentage = (x / containerRect.width) * 100;
+        container.addEventListener('touchstart', (e) => {
+            isDragging = true;
+            updateSlider(e.touches[0].clientX);
+            e.preventDefault(); // Prevent scrolling while dragging
+        });
 
-                overlay.style.width = `${percentage}%`;
-                handle.style.left = `${percentage}%`;
-            };
+        document.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+            updateSlider(e.clientX);
+        });
 
-            // --- Event Listeners ---
+        document.addEventListener('touchmove', (e) => {
+            if (!isDragging) return;
+            updateSlider(e.touches[0].clientX);
+            e.preventDefault(); // Prevent scrolling while dragging
+        });
 
-            // Desktop Mouse Events
-            handle.addEventListener('mousedown', (e) => {
-                e.preventDefault(); // Prevent default image drag behavior
-                isDragging = true;
-            });
+        document.addEventListener('mouseup', () => {
+            isDragging = false;
+        });
 
-            container.addEventListener('mousedown', (e) => {
-                // Allow clicking anywhere on the container to jump the slider
-                e.preventDefault();
-                isDragging = true;
-                updateSlider(e.clientX);
-            });
+        document.addEventListener('touchend', () => {
+            isDragging = false;
+        });
 
-            document.addEventListener('mouseup', () => {
-                isDragging = false;
-            });
-
-            document.addEventListener('mousemove', (e) => {
-                if (isDragging) {
-                    // Use requestAnimationFrame for smoother rendering
-                    requestAnimationFrame(() => updateSlider(e.clientX));
-                }
-            });
-
-            // Mobile Touch Events
-            handle.addEventListener('touchstart', (e) => {
-                // Prevent page scroll while dragging
-                e.preventDefault(); 
-                isDragging = true;
-            });
-            
-            container.addEventListener('touchstart', (e) => {
-                e.preventDefault();
-                isDragging = true;
-                updateSlider(e.touches[0].clientX);
-            });
-
-            document.addEventListener('touchend', () => {
-                isDragging = false;
-            });
-
-            document.addEventListener('touchmove', (e) => {
-                if (isDragging) {
-                    e.preventDefault(); // Prevent scrolling
-                    requestAnimationFrame(() => updateSlider(e.touches[0].clientX));
-                }
-            });
+        // Initialize slider position (optional, to ensure it's centered on load)
+        window.addEventListener('load', () => {
+            updateSlider(container.getBoundingClientRect().left + container.offsetWidth / 2);
+        });
+        window.addEventListener('resize', () => {
+            updateSlider(container.getBoundingClientRect().left + container.offsetWidth / 2);
         });
     </script>
 </body>
