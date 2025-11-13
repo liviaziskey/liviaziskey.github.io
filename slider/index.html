@@ -25,56 +25,62 @@
             text-align: center;
             max-width: 600px;
         }
+        
+        /* --- NEW CONTAINER AND IMAGE CSS --- */
+
         .image-compare-container {
             position: relative;
-            width: 80%; /* Adjust as needed */
-            max-width: 900px;
-            aspect-ratio: 4/3; /* Set a consistent aspect ratio */
+            width: 80%; /* Or 100% if you prefer */
+            max-width: 900px; /* Adjust as needed */
             overflow: hidden;
             border: 2px solid #ccc;
             cursor: ew-resize;
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            background-color: #000; /* Add a bg for letterboxing */
+            /* NO aspect-ratio or height. The base image defines it. */
         }
+        
         .image-compare-container img {
-            position: absolute;
-            width: 100%;
-            height: 100%;
+            /* This applies to BOTH images */
+            display: block;
+            width: 100%; /* Fill the container */
+            height: 100%; /* Fill the container */
+            pointer-events: none;
             
-            /* --- THIS IS THE FIX --- */
-            object-fit: contain; /* Was 'cover', 'contain' prevents cropping */
-            
-            pointer-events: none; /* Prevent image dragging */
+            /* Remove all 'object-fit' properties */
         }
-        .image-compare-container .overlay {
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 50%; /* Initial split */
-            height: 100%;
-            overflow: hidden;
+
+        .base-image {
+            /* This image is in the normal flow and sets the container's height */
+            position: relative; 
         }
-        .image-compare-container .overlay img {
-            left: unset;
-            right: 0;
-            
-            /* This property is no longer needed */
-            /* object-position: right; */ 
-        }
-        .image-compare-container .divider {
+
+        .overlay-image {
+            /* This image sits on top and will be clipped */
             position: absolute;
             top: 0;
-            left: 50%;
+            left: 0;
+            
+            /* Initial clip: show right 50% */
+            clip-path: polygon(50% 0, 100% 0, 100% 100%, 50% 100%);
+        }
+
+        /* --- SLIDER HANDLE CSS (Slightly modified) --- */
+
+        .divider {
+            position: absolute;
+            top: 0;
+            left: 50%; /* Initial position */
             width: 4px;
             height: 100%;
             background-color: white;
             transform: translateX(-50%);
             z-index: 10;
+            pointer-events: none; 
         }
-        .image-compare-container .handle {
+        .handle {
             position: absolute;
             top: 50%;
-            left: 50%;
+            left: 50%; /* Initial position */
             transform: translate(-50%, -50%);
             width: 40px;
             height: 40px;
@@ -86,21 +92,21 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            pointer-events: none; /* Let the container handle dragging */
+            pointer-events: none;
         }
-        .image-compare-container .handle::before,
-        .image-compare-container .handle::after {
+        .handle::before,
+        .handle::after {
             content: '';
             position: absolute;
             width: 10px;
             height: 2px;
             background-color: #333;
         }
-        .image-compare-container .handle::before {
+        .handle::before {
             left: 8px;
             transform: rotate(45deg);
         }
-        .image-compare-container .handle::after {
+        .handle::after {
             right: 8px;
             transform: rotate(-45deg);
         }
@@ -135,22 +141,20 @@
     <p>Explore the transformation of the historic Temple Building on the UNL campus. Drag the slider to compare how it looked in the 1920s with its appearance in 2025.</p>
 
     <div class="image-compare-container" id="imageCompare">
+        
         <img src="58.jpg" alt="Temple Building in the 1920s" class="base-image">
         
-        <div class="overlay">
-            <img src="IMG_5296.jpeg" alt="Temple Building in 2025" class="overlay-image">
-        </div>
+        <img src="IMG_5296.jpeg" alt="Temple Building in 2025" class="overlay-image">
         
         <div class="divider"></div>
         <div class="handle"></div>
         <span class="label left">1920s</span>
-        <span classlabel right">2025</span>
+        <span class="label right">2025</span>
     </div>
 
     <script>
-        // JavaScript is identical
         const container = document.getElementById('imageCompare');
-        const overlay = container.querySelector('.overlay');
+        const overlayImage = container.querySelector('.overlay-image');
         const divider = container.querySelector('.divider');
         const handle = container.querySelector('.handle');
 
@@ -161,44 +165,48 @@
             let newX = x - containerRect.left;
 
             // Clamp the position to be within the container
-            if (newX < 0) {
-                newX = 0;
-            } else if (newX > containerRect.width) {
-                newX = containerRect.width;
-            }
+            if (newX < 0) newX = 0;
+            if (newX > containerRect.width) newX = containerRect.width;
 
             const percentage = (newX / containerRect.width) * 100;
 
-            overlay.style.width = `${100 - percentage}%`;
+            // Update the positions
             divider.style.left = `${percentage}%`;
             handle.style.left = `${percentage}%`;
+            
+            // Update the CSS clip-path
+            overlayImage.style.clipPath = `polygon(${percentage}% 0, 100% 0, 100% 100%, ${percentage}% 100%)`;
         }
 
+        // Mouse events
         container.addEventListener('mousedown', (e) => {
             isDragging = true;
             updateSlider(e.clientX);
-        });
-        container.addEventListener('touchstart', (e) => {
-            isDragging = true;
-            updateSlider(e.touches[0].clientX);
-            e.preventDefault(); // Prevent scrolling while dragging
         });
         document.addEventListener('mousemove', (e) => {
             if (!isDragging) return;
             updateSlider(e.clientX);
         });
+        document.addEventListener('mouseup', () => {
+            isDragging = false;
+        });
+
+        // Touch events
+        container.addEventListener('touchstart', (e) => {
+            isDragging = true;
+            updateSlider(e.touches[0].clientX);
+            e.preventDefault(); 
+        });
         document.addEventListener('touchmove', (e) => {
             if (!isDragging) return;
             updateSlider(e.touches[0].clientX);
-            e.preventDefault(); // Prevent scrolling while dragging
-        });
-        document.addEventListener('mouseup', () => {
-            isDragging = false;
+            e.preventDefault(); 
         });
         document.addEventListener('touchend', () => {
             isDragging = false;
         });
 
+        // Set initial position
         window.addEventListener('load', () => {
             updateSlider(container.getBoundingClientRect().left + container.offsetWidth / 2);
         });
