@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Temple Building: Then & Now</title>
     <style>
-        /* CSS is identical to before */
         body {
             font-family: Arial, sans-serif;
             margin: 0;
@@ -28,9 +27,9 @@
         }
         .image-compare-container {
             position: relative;
-            width: 80%;
+            width: 80%; /* Adjust as needed */
             max-width: 900px;
-            aspect-ratio: 4/3;
+            aspect-ratio: 4/3; /* Adjust based on your image aspect ratio */
             overflow: hidden;
             border: 2px solid #ccc;
             cursor: ew-resize;
@@ -41,13 +40,13 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
-            pointer-events: none;
+            pointer-events: none; /* Prevent image dragging */
         }
         .image-compare-container .overlay {
             position: absolute;
             top: 0;
             right: 0;
-            width: 50%;
+            width: 50%; /* Initial split */
             height: 100%;
             overflow: hidden;
         }
@@ -81,7 +80,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            pointer-events: none;
+            pointer-events: none; /* Let the container handle dragging */
         }
         .image-compare-container .handle::before,
         .image-compare-container .handle::after {
@@ -99,6 +98,8 @@
             right: 8px;
             transform: rotate(-45deg);
         }
+
+        /* Labels for "Then" and "Now" */
         .label {
             position: absolute;
             top: 10px;
@@ -115,6 +116,7 @@
         .label.right {
             right: 10px;
         }
+
         @media (max-width: 768px) {
             .image-compare-container {
                 width: 95%;
@@ -127,11 +129,10 @@
     <p>Explore the transformation of the historic Temple Building on the UNL campus. Drag the slider to compare how it looked in the 1920s with its appearance in 2025.</p>
 
     <div class="image-compare-container" id="imageCompare">
-        
-        <img src="data:image/jpeg;base64,[...PASTE THE VERY LONG BASE64 STRING FOR 58.jpg HERE...]" alt="Temple Building in the 1920s" class="base-image">
+        <img src="58.jpg" alt="Temple Building in the 1920s" class="base-image">
         
         <div class="overlay">
-            <img src="data:image/jpeg;base64,[...PASTE THE VERY LONG BASE64 STRING FOR IMG_5296.jpg HERE...]" alt="Temple Building in 2025" class="overlay-image">
+            <img src="IMG_5296.jpeg" alt="Temple Building in 2025" class="overlay-image">
         </div>
         
         <div class="divider"></div>
@@ -141,7 +142,7 @@
     </div>
 
     <script>
-        // JavaScript is identical to before
+        // JavaScript is identical
         const container = document.getElementById('imageCompare');
         const overlay = container.querySelector('.overlay');
         const divider = container.querySelector('.divider');
@@ -153,8 +154,12 @@
             const containerRect = container.getBoundingClientRect();
             let newX = x - containerRect.left;
 
-            if (newX < 0) newX = 0;
-            if (newX > containerRect.width) newX = containerRect.width;
+            // Clamp the position to be within the container
+            if (newX < 0) {
+                newX = 0;
+            } else if (newX > containerRect.width) {
+                newX = containerRect.width;
+            }
 
             const percentage = (newX / containerRect.width) * 100;
 
@@ -170,7 +175,7 @@
         container.addEventListener('touchstart', (e) => {
             isDragging = true;
             updateSlider(e.touches[0].clientX);
-            e.preventDefault();
+            e.preventDefault(); // Prevent scrolling while dragging
         });
         document.addEventListener('mousemove', (e) => {
             if (!isDragging) return;
@@ -179,10 +184,14 @@
         document.addEventListener('touchmove', (e) => {
             if (!isDragging) return;
             updateSlider(e.touches[0].clientX);
-            e.preventDefault();
+            e.preventDefault(); // Prevent scrolling while dragging
         });
-        document.addEventListener('mouseup', () => { isDragging = false; });
-        document.addEventListener('touchend', () => { isDragging = false; });
+        document.addEventListener('mouseup', () => {
+            isDragging = false;
+        });
+        document.addEventListener('touchend', () => {
+            isDragging = false;
+        });
 
         window.addEventListener('load', () => {
             updateSlider(container.getBoundingClientRect().left + container.offsetWidth / 2);
