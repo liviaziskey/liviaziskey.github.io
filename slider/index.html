@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Temple Building: Then & Now</title>
+    <title>Social Science Hall to Temple Building: A Century of Change</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -26,45 +26,35 @@
             max-width: 600px;
         }
         
-        /* --- NEW CONTAINER AND IMAGE CSS --- */
-
         .image-compare-container {
             position: relative;
-            width: 80%; /* Or 100% if you prefer */
-            max-width: 900px; /* Adjust as needed */
+            width: 80%; 
+            max-width: 900px; 
             overflow: hidden;
             border: 2px solid #ccc;
             cursor: ew-resize;
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            /* NO aspect-ratio or height. The base image defines it. */
         }
         
         .image-compare-container img {
-            /* This applies to BOTH images */
             display: block;
-            width: 100%; /* Fill the container */
-            height: 100%; /* Fill the container */
+            width: 100%; 
+            height: 100%;
             pointer-events: none;
-            
-            /* Remove all 'object-fit' properties */
         }
 
         .base-image {
-            /* This image is in the normal flow and sets the container's height */
             position: relative; 
         }
 
         .overlay-image {
-            /* This image sits on top and will be clipped */
             position: absolute;
             top: 0;
             left: 0;
-            
-            /* Initial clip: show right 50% */
             clip-path: polygon(50% 0, 100% 0, 100% 100%, 50% 100%);
         }
 
-        /* --- SLIDER HANDLE CSS (Slightly modified) --- */
+        /* --- MODIFIED DIVIDER AND HANDLE CSS --- */
 
         .divider {
             position: absolute;
@@ -76,39 +66,46 @@
             transform: translateX(-50%);
             z-index: 10;
             pointer-events: none; 
+            box-shadow: 0 0 8px rgba(0,0,0,0.6);
         }
-        .handle {
-            position: absolute;
-            top: 50%;
-            left: 50%; /* Initial position */
-            transform: translate(-50%, -50%);
-            width: 40px;
-            height: 40px;
-            background-color: white;
-            border-radius: 50%;
-            border: 2px solid #ccc;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-            z-index: 11;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            pointer-events: none;
-        }
-        .handle::before,
-        .handle::after {
+
+        /* Arrows added to the divider */
+        .divider::before,
+        .divider::after {
             content: '';
             position: absolute;
-            width: 10px;
-            height: 2px;
-            background-color: #333;
+            top: 50%;
+            width: 0; 
+            height: 0; 
+            border-style: solid;
+            transform: translateY(-50%);
+            z-index: 12;
         }
-        .handle::before {
-            left: 8px;
-            transform: rotate(45deg);
+
+        /* Left-pointing arrow */
+        .divider::before {
+            right: 100%; 
+            margin-right: 4px; 
+            border-width: 8px 8px 8px 0;
+            border-color: transparent white transparent transparent;
         }
+
+        /* Right-pointing arrow */
+        .divider::after {
+            left: 100%; 
+            margin-left: 4px; 
+            border-width: 8px 0 8px 8px;
+            border-color: transparent transparent transparent white;
+        }
+
+        /* Hide the circle handle */
+        .handle {
+           display: none;
+        }
+        
+        .handle::before,
         .handle::after {
-            right: 8px;
-            transform: rotate(-45deg);
+           display: none;
         }
 
         /* Labels for "Then" and "Now" */
@@ -137,17 +134,18 @@
     </style>
 </head>
 <body>
-    <h1>The Temple Building: Then & Now</h1>
-    <p>Explore the transformation of the historic Temple Building on the UNL campus. Drag the slider to compare how it looked in the 1920s with its appearance in 2025.</p>
-
+    
+    <h1>Social Science Hall to Temple Building: A Century of Change</h1>
+    <p>Explore the evolution of one of UNL's most elegant buildings. Completed in 1919 as the Social Sciences Hall, this iconic structure with its grand Ionic columns was a cornerstone of campus expansion. Today, it is the Temple Building, home to the Johnny Carson School of Theatre and Film. Drag the slider to compare its original 1920s appearance to its 2025 look.</p>
     <div class="image-compare-container" id="imageCompare">
         
-        <img src="58.jpg" alt="Temple Building in the 1920s" class="base-image">
+        <img src="58.jpg" alt="Social Science Hall in the 1920s" class="base-image">
         
-        <img src="IMG_5296.jpeg" alt="Temple Building in 2025" class="overlay-image">
+        <img src="IMG_5296.jpeg" alt="The Temple Building in 2025" class="overlay-image">
         
         <div class="divider"></div>
-        <div class="handle"></div>
+        <div class="handle"></div> 
+        
         <span class="label left">1920s</span>
         <span class="label right">2025</span>
     </div>
@@ -156,7 +154,7 @@
         const container = document.getElementById('imageCompare');
         const overlayImage = container.querySelector('.overlay-image');
         const divider = container.querySelector('.divider');
-        const handle = container.querySelector('.handle');
+        const handle = container.querySelector('.handle'); 
 
         let isDragging = false;
 
@@ -164,17 +162,13 @@
             const containerRect = container.getBoundingClientRect();
             let newX = x - containerRect.left;
 
-            // Clamp the position to be within the container
             if (newX < 0) newX = 0;
             if (newX > containerRect.width) newX = containerRect.width;
 
             const percentage = (newX / containerRect.width) * 100;
 
-            // Update the positions
             divider.style.left = `${percentage}%`;
             handle.style.left = `${percentage}%`;
-            
-            // Update the CSS clip-path
             overlayImage.style.clipPath = `polygon(${percentage}% 0, 100% 0, 100% 100%, ${percentage}% 100%)`;
         }
 
